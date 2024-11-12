@@ -1,7 +1,7 @@
 // import './assets/main.css'
 
 import { Quasar, Dark, Notify, Dialog } from 'quasar'
-
+import 'vue-multiselect/dist/vue-multiselect.css'
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 
