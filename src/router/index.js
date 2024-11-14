@@ -11,9 +11,15 @@ const router = createRouter({
         { path: '/', name: 'home', component: HomeView },
         { path: '/about', name: 'about', component: () => import('../views/AboutView.vue') },
         { path: '/tags', name: 'tags', component: () => import('../views/TagsView.vue') },
-        { path: '/add-expense', name: 'add-expense', component: () => import('../views/AddExpenseView.vue') },
       ]
     },
+    {
+      path: "/forms",
+      component: () => import("../layouts/AddExpenseLayout.vue"),
+      children: [
+        { path: '/add-expense', name: 'add-expense', component: () => import('../views/AddExpenseView.vue') },
+      ]
+    }
     // {
     //   path: '/about',
     //   name: 'about',

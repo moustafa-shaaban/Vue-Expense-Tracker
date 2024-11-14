@@ -13,8 +13,8 @@ function onClick () {
 </script>
 
 <template>
-  <q-page>
-    <q-list>
+  <q-page class="flex flex-center column q-my-lg">
+    <q-list style="min-width: 350px">
       <q-item v-for="expense in expenses" :key="expense.id">
         <q-item-section>
           <q-item-label>

@@ -20,7 +20,7 @@
         </q-toolbar>
       </q-header>
   
-      <q-drawer v-model="leftDrawerOpen" :width="200" :breakpoint="700" side="left" behavior="desktop" bordered>
+      <q-drawer v-model="leftDrawerOpen" overlay :width="200" :breakpoint="700" side="left" behavior="desktop" bordered>
           <q-scroll-area class="fit">
             <q-list padding class="menu-list" :class="Dark.isActive ? 'text-white' : 'text-dark'">
               <q-item exact clickable v-ripple to="/">
