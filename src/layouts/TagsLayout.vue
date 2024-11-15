@@ -5,7 +5,7 @@ import { Dark } from 'quasar';
 // import { useNotesStore } from 'src/stores/notes-store';
 
 defineOptions({
-    name: 'AddExpenseLayout'
+    name: 'AddTransactionLayout'
 })
 
 const darkQuery = '(prefers-color-scheme: dark)';

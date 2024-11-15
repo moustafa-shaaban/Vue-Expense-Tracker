@@ -17,10 +17,12 @@ const expensesTags = ref([]);
 
 expensesTags.value = expensesStore.tags;
 
+const income = ref('Income')
+
 function handleSubmit() {
     try {
 
-        expensesStore.addExpense({
+        expensesStore.addTransaction({
             id: nanoid(),
             name: expenseName.value,
             amount: expenseAmount.value,
@@ -63,7 +65,12 @@ function handleSubmit() {
 
             <q-input filled v-model="expenseAmount" type="number" required label="Expense Amount" lazy-rules
                 :rules="[val => val && val.length > 0 || 'Expense Amount is required']" />
-            <q-toggle v-model="expenseValue" />
+            <q-toggle 
+                checked-icon="add" 
+                unchecked-icon="remove" 
+                color="blue" 
+                v-model="expenseValue" 
+            />
 
             <div class="q-my-md" v-if="expensesStore.tags.length > 0"><label class="typo__label">Tagging</label>
             <multiselect 

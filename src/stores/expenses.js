@@ -15,12 +15,12 @@ export const useExpensesStore = defineStore('expenses', {
   }),
 
   actions: {
-    addExpense(expense) {
-      this.expenses.push(expense);
-      if (expense.increase) {
-        this.totalAmount = this.totalAmount + Number(expense.amount)
+    addTransaction(transaction) {
+      this.expenses.push(transaction);
+      if (transaction.increase) {
+        this.totalAmount = this.totalAmount + Number(transaction.amount)
       } else {
-        this.totalAmount = this.totalAmount - Number(expense.amount)
+        this.totalAmount = this.totalAmount - Number(transaction.amount)
       }
     }
   }

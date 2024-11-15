@@ -15,9 +15,9 @@ const router = createRouter({
     },
     {
       path: "/forms",
-      component: () => import("../layouts/AddExpenseLayout.vue"),
+      component: () => import("../layouts/AddTransactionLayout.vue"),
       children: [
-        { path: '/add-expense', name: 'add-expense', component: () => import('../views/AddExpenseView.vue') },
+        { path: '/add-expense', name: 'add-expense', component: () => import('../views/AddTransactionView.vue') },
       ]
     }
     // {
