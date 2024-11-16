@@ -1,9 +1,9 @@
 <script setup>
-import { useExpensesStore } from '@/stores/expenses';
+import { useTransactionsStore } from '@/stores/expenses';
 
-const expensesStore = useExpensesStore();
+const transactionsStore = useTransactionsStore();
 
-const tags = expensesStore.tags;
+const tags = transactionsStore.tags;
 </script>
 
 <template>
