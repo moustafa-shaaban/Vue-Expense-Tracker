@@ -19,39 +19,26 @@ function onClick() {
 </script>
 
 <template>
-  <q-page class="flex flex-center column q-my-lg">
-    <q-list style="min-width: 350px">
-      <div>
-        <!-- <div>
-          <p>You have {{ totalAmount }} $</p>
-          <p>Total Incomes {{ totalIncomes }} $</p>
-          <p>Total Expenses {{ totalExpenses }} $</p>
-        </div> -->
-        
-        
-        
+  <q-page class="">
+    <q-card class="my-card bg-primary text-white">
+      <q-card-section>
+        <div class="text-h6">Your Expenses</div>
+        <div class="text-subtitle2">Balance: {{ totalAmount }}</div>
+      </q-card-section>
 
-        <h4>Available Expenses</h4>
-        <div v-for="expense in expenses" :key="expense.id">
-          <p>{{ expense.name }}</p>
-          <p>{{ expense.amount }}</p>
-        </div>
+      <q-card-section>
+        Hello
+      </q-card-section>
 
-        <p>
-          You have total -{{ expenses }} $ expenses
-        </p>
+      <q-separator dark />
 
-        <h4>Available Incomes</h4>
-        <!-- <div v-for="income in incomes" :key="income.id">
-          <p>{{ income.name }}</p>
-          <p>{{ income.amount }}</p>
-        </div> -->
-
-        <p>
-          You have total {{ incomes }} $ incomes
-        </p>
-      </div>
-      <q-item v-for="expense in transactions" :key="expense.id">
+      <q-card-actions>
+        <q-btn flat>Income: {{ incomes }} $</q-btn>
+        <q-btn flat>Expenses: {{ expenses }} $</q-btn>
+      </q-card-actions>
+    </q-card>
+    <q-list bordered>
+      <q-item clickable v-ripple v-for="expense in transactions" :key="expense.id">
         <q-item-section>
           <q-item-label>
             <div class="q-pa-md">
@@ -64,10 +51,9 @@ function onClick() {
           </q-item-label>
         </q-item-section>
 
-        <q-item-section side top>
-          <q-item-label caption>{{ expense.amount }} LE</q-item-label>
+        <q-item-section avatar>
+          <q-item-label caption>{{ expense.amount }} $</q-item-label>
         </q-item-section>
-        <q-separator spaced inset />
       </q-item>
 
     </q-list>
@@ -80,3 +66,9 @@ function onClick() {
     </q-page-sticky>
   </q-page>
 </template>
+
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  
+</style>

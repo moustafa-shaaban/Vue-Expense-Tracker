@@ -12,8 +12,6 @@ export const useTransactionsStore = defineStore('transactions', {
       { id: nanoid(), name: "Commute" },
     ]),
     totalAmount: useStorage("totalAmount", 0),
-    totalIncomes: useStorage("totalIncomes", 0),
-    totalExpenses: useStorage("totalExpenses", 0),
   }),
 
   getters: {
@@ -47,10 +45,8 @@ export const useTransactionsStore = defineStore('transactions', {
       this.transactions.push(transaction);
       if (transaction.transactionValue) {
         this.totalAmount = this.totalAmount + Number(transaction.amount)
-        this.totalIncomes = this.totalIncomes + Number(transaction.amount)
       } else {
         this.totalAmount = this.totalAmount - Number(transaction.amount)
-        this.totalExpenses = this.totalExpenses - Number(transaction.amount)
       }
     }
   }

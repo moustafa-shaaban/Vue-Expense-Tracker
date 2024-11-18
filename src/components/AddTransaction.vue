@@ -11,6 +11,7 @@ const transactionsStore = useTransactionsStore();
 const transactionName = ref("");
 const transactionAmount = ref("");
 const transactionType = ref('');
+const transactionDate = ref(Date.now())
 
 const transactionValue = ref(false)
 
@@ -37,7 +38,7 @@ function handleSubmit() {
             transactionValue: transactionValue.value,
             tags: tags.value,
             type: transactionType.value,
-            dateAdded: Date.now(),
+            dateAdded: transactionDate.value,
         })
 
         router.push('/');
@@ -79,23 +80,25 @@ function handleSubmit() {
                     <div v-if="transactionValue">
                         <q-input autocomplete filled v-model="transactionName" label="Income Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
-    
-                        <q-input filled v-model="transactionAmount" type="number" required label="Income Amount" lazy-rules
-                            :rules="[val => val && val.length > 0 || 'Income Amount is required']" />
+
+                        <q-input filled v-model="transactionAmount" type="number" required label="Income Amount"
+                            lazy-rules :rules="[val => val && val.length > 0 || 'Income Amount is required']" />
                     </div>
 
                     <div v-else>
-
                         <q-input autocomplete filled v-model="transactionName" label="Expense Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
-    
-                        <q-input filled v-model="transactionAmount" type="number" required label="Expense Amount" lazy-rules
-                            :rules="[val => val && val.length > 0 || 'Expense Amount is required']" />
-                        </div>
-                        <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
+
+                        <q-input filled v-model="transactionAmount" type="number" required label="Expense Amount"
+                            lazy-rules :rules="[val => val && val.length > 0 || 'Expense Amount is required']" />
+                    </div>
+                    
+                    <q-date name="dateAdded" v-model="transactionDate" minimal />
+                    <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
 
-                    <div class="q-my-md" v-if="transactionsStore.tags.length > 0"><label class="typo__label">Tagging</label>
+                    <div class="q-my-md" v-if="transactionsStore.tags.length > 0"><label
+                            class="typo__label">Tagging</label>
                         <multiselect class="q-my-md" v-model="tags" placeholder="Search" label="name" track-by="name"
                             :options="transactionsTags" :multiple="true" :taggable="true" :close-on-select="true"
                             :clear-on-select="false">
