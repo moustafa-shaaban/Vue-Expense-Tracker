@@ -38,7 +38,7 @@ function handleSubmit() {
             transactionValue: transactionValue.value,
             tags: tags.value,
             type: transactionType.value,
-            dateAdded: transactionDate.value,
+            dateAdded: transactionDate.value || Date.now(),
         })
 
         router.push('/');
@@ -92,15 +92,15 @@ function handleSubmit() {
                         <q-input filled v-model="transactionAmount" type="number" required label="Expense Amount"
                             lazy-rules :rules="[val => val && val.length > 0 || 'Expense Amount is required']" />
                     </div>
-                    
+
                     <q-date name="dateAdded" v-model="transactionDate" minimal />
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
 
                     <div class="q-my-md" v-if="transactionsStore.tags.length > 0"><label
                             class="typo__label">Tagging</label>
-                        <multiselect class="q-my-md" v-model="tags" placeholder="Search" label="name" track-by="name"
-                            :options="transactionsTags" :multiple="true" :taggable="true" :close-on-select="true"
+                        <multiselect class="q-my-md" v-model="tags" placeholder="Search" label="name" track-by="id"
+                            :options="transactionsTags"  :close-on-select="true"
                             :clear-on-select="false">
                         </multiselect>
                     </div>

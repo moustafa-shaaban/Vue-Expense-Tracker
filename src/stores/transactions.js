@@ -2,6 +2,8 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 import { nanoid } from 'nanoid'
+import { date } from 'quasar'
+import moment from 'moment'
 
 export const useTransactionsStore = defineStore('transactions', {
   state: () => ({
@@ -11,6 +13,7 @@ export const useTransactionsStore = defineStore('transactions', {
       { id: nanoid(), name: "Salary" },
       { id: nanoid(), name: "Commute" },
     ]),
+
     totalAmount: useStorage("totalAmount", 0),
   }),
 
@@ -37,6 +40,19 @@ export const useTransactionsStore = defineStore('transactions', {
         }, 0)
       });
       return incomesValue;
+    },
+
+    groups: (state) => {
+      // Source: https://stackoverflow.com/a/53108499
+      let groupedTransactions = {};
+
+      state.transactions.forEach((transaction) => {
+        const month = moment(transaction.dateAdded).month();
+        groupedTransactions[month] = groupedTransactions[month] || [];
+        groupedTransactions[month].push(transaction);
+      })
+
+      return groupedTransactions;
     }
   },
 

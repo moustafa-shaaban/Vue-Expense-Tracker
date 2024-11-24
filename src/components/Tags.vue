@@ -1,5 +1,5 @@
 <script setup>
-import { useTransactionsStore } from '@/stores/expenses';
+import { useTransactionsStore } from '@/stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 

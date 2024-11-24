@@ -13,102 +13,104 @@ const transactions = transactionsStore.transactions;
 const expenses = transactionsStore.getExpenses;
 const incomes = transactionsStore.getIncomes;
 
-const title = expenses.value
+// let groupedTransactions = transactionsStore.groups;
 
-const totalIncomes = transactionsStore.totalIncomes;
-const totalExpenses = transactionsStore.totalExpenses;
+// const filter = ref('');
 
-const filter = ref('');
+// const columns = [
+//   {
+//     name: 'name',
+//     label: "Name",
+//     required: true,
+//     align: 'left',
+//     field: row => row.name,
+//     format: val => `${val}`,
+//     sortable: true
+//   },
+//   { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
+//   { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
+//   { name: 'Tags', label: 'Tags', field: row => row.tags },
+//   { name: 'delete', label: 'Actions' },
+// ]
 
-const columns = [
-  {
-    name: 'name',
-    label: "Name",
-    required: true,
-    align: 'left',
-    field: row => row.name,
-    format: val => `${val}`,
-    sortable: true
-  },
-  {name: 'Date', label: 'Date',field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true},
-  { name: 'Amount',label: 'Amount', field: row => row.amount, sortable: true },
-  { name: 'Tags', label: 'Tags', field: row => row.tags.name },
-  { name: 'delete', label: 'Actions' },
-]
+// const rows = transactions;
 
-const rows = transactions;
-
-function onClick() {
-  // console.log('Clicked on a QChip')
-}
 </script>
 
 <template>
   <q-page class="q-pa-md">
-    <!-- <q-card class="my-card bg-primary text-white">
+    <q-card class="my-card q-my-md">
       <q-card-section>
         <div class="text-h6">Your Expenses</div>
         <div class="text-subtitle2">Balance: {{ totalAmount }}</div>
       </q-card-section>
 
-      <q-card-section>
-        Hello
-      </q-card-section>
-
       <q-separator dark />
 
       <q-card-actions>
-        <q-btn flat>Income: {{ incomes }} $</q-btn>
-        <q-btn flat>Expenses: {{ expenses }} $</q-btn>
+        <q-btn>Income: {{ incomes }} $</q-btn>
+        <q-btn>Expenses: {{ expenses }} $</q-btn>
       </q-card-actions>
     </q-card>
-    <q-list bordered>
-      <q-item clickable v-ripple v-for="expense in transactions" :key="expense.id">
-        <q-item-section>
-          <q-item-label>
-            <div class="q-pa-md">
-              {{ expense.name }}
-              <span>{{ date.formatDate(expense.dateAdded, 'DD MMMM YYYY') }}</span>
-              <q-chip v-for="tag in expense.tags" :key="tag.id" size="sm" clickable @click="onClick" color="primary"
-                text-color="white" icon="event">
-                {{ tag.name }}
-              </q-chip>
-            </div>
+
+    <q-list>
+      <q-item v-for="(transaction, index) in transactions" :key="index">
+        <q-item-section top class="col-2 gt-sm">
+          <q-item-label class="q-mt-sm">{{ transaction.name }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section top>
+          <q-item-label lines="1">
+            <span class="text-weight-medium">{{ date.formatDate(transaction.dateAdded, 'DD MMMM YYYY') }}</span>
+          </q-item-label>
+          <q-item-label caption lines="1">
+            <q-badge clickable rounded color="primary" class="q-mx-xs" :key="index">
+              <!-- <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-detail', params: { id: tag.id } }" /> -->
+              <q-breadcrumbs-el :label="transaction.tags.name" />          
+            </q-badge>
+          </q-item-label>
+          <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary">
+            <span class="cursor-pointer">{{ transaction.amount }} $</span>
           </q-item-label>
         </q-item-section>
 
-        <q-item-section avatar>
-          <q-item-label caption>{{ expense.amount }} $</q-item-label>
+        <q-item-section top side>
+          <div class="text-grey-8 q-gutter-xs">
+            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" />
+            <q-btn class="gt-xs" size="12px" flat dense round icon="done" />
+            <q-btn size="12px" flat dense round icon="more_vert" />
+          </div>
         </q-item-section>
       </q-item>
-
-    </q-list> -->
-    <!-- <h1>Home page</h1>
-    <p>You have: $ {{ totalAmount }}</p> -->
-    <q-table
-      :grid="$q.screen.xs"
-      flat bordered
-      title="Transactions"
-      :rows="rows"
-      :columns="columns"
-      row-key="id"
-      :filter="filter"
-      
-    >
-    <template v-slot:bottom-left>
-      <p>You have: $ {{ totalAmount }}</p>
-        
+    </q-list>
+    <!-- <q-table :grid="$q.screen.xs" flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id"
+      :filter="filter">
+      <template v-slot:bottom-left>
+        <p>You have: $ {{ totalAmount }}</p>
       </template>
-    
+
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
-        
+
       </template>
-    </q-table>
+    </q-table> -->
+
+    <!-- <div>
+      <q-list bordered class="rounded-borders">
+        <q-expansion-item v-for="group in groupedTransactions" expand-separator icon="perm_identity"
+          label="Account settings" caption="John Doe">
+          <q-card v-for="item in group" :key="item.id">
+            <q-card-section>
+              {{ date.formatDate(item.dateAdded, 'DD MMMM YYYY') }}
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
+    </div> -->
 
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
