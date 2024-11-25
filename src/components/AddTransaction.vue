@@ -20,7 +20,16 @@ const transactionsTags = ref([]);
 
 transactionsTags.value = transactionsStore.tags;
 
+const options = ref(transactionsTags.value)
+
 const router = useRouter();
+
+// function filterFunction(val, update, abort) {
+//     update(() => {
+//         const needle = val.toLowerCase()
+//         options.value = tags.filter(v => v.toLowerCase().indexOf(needle) > -1)
+//     })
+// }
 
 function handleSubmit() {
     try {
@@ -96,14 +105,23 @@ function handleSubmit() {
                     <q-date name="dateAdded" v-model="transactionDate" minimal />
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
+                    <q-select class="q-my-md" filled v-model="tags":options="options" option-value="id"
+                        option-label="name" map-options>
+                        <template v-slot:no-option>
+                            <q-item>
+                                <q-item-section class="text-grey">
+                                    No results
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-select>
 
-                    <div class="q-my-md" v-if="transactionsStore.tags.length > 0"><label
+                    <!-- <div class="q-my-md" v-if="transactionsStore.tags.length > 0"><label
                             class="typo__label">Tagging</label>
                         <multiselect class="q-my-md" v-model="tags" placeholder="Search" label="name" track-by="id"
-                            :options="transactionsTags"  :close-on-select="true"
-                            :clear-on-select="false">
+                            :options="transactionsTags" :close-on-select="true" :clear-on-select="false">
                         </multiselect>
-                    </div>
+                    </div> -->
 
                     <q-page-sticky position="bottom-right" :offset="[18, 18]">
                         <q-btn type="submit" fab icon="done" color="primary">
