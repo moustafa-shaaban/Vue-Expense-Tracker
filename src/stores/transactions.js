@@ -42,18 +42,32 @@ export const useTransactionsStore = defineStore('transactions', {
       return incomesValue;
     },
 
-    groups: (state) => {
-      // Source: https://stackoverflow.com/a/53108499
-      let groupedTransactions = {};
+    getTransactionById: (state) => {
+      return (id) => state.transactions.find((transaction) => transaction.id === id);
+    },
 
-      state.transactions.forEach((transaction) => {
-        const month = moment(transaction.dateAdded).month();
-        groupedTransactions[month] = groupedTransactions[month] || [];
-        groupedTransactions[month].push(transaction);
-      })
+    getTransactionsByTag: (state) => {
+      return (id) => state.transactions.filter((transaction) => {
+        return transaction.tags.find((tag) => tag.id === id);
+      });
+    },
 
-      return groupedTransactions;
-    }
+    getTagById: (state) => {
+      return (id) => state.tags.find((tag) => tag.id === id);
+    },
+
+    // groups: (state) => {
+    //   // Source: https://stackoverflow.com/a/53108499
+    //   let groupedTransactions = {};
+
+    //   state.transactions.forEach((transaction) => {
+    //     const month = moment(transaction.dateAdded).month();
+    //     groupedTransactions[month] = groupedTransactions[month] || [];
+    //     groupedTransactions[month].push(transaction);
+    //   })
+
+    //   return groupedTransactions;
+    // }
   },
 
   actions: {
@@ -64,6 +78,41 @@ export const useTransactionsStore = defineStore('transactions', {
       } else {
         this.totalAmount = this.totalAmount - Number(transaction.amount)
       }
-    }
+    },
+
+    updateTransaction(id, newTransaction) {
+      const transactionToEdit = this.transactions.find((transaction) => transaction.id === id);
+      transactionToEdit.name = newTransaction.name;
+      transactionToEdit.amount = newTransaction.amount;
+      transactionToEdit.tags = newTransaction.tags;
+    },
+
+    deleteTransaction(id) {
+      this.transactions = this.transactions.filter((transaction) => {
+        return transaction.id !== id;
+      })
+    },
+
+    addTag(tag) {
+      this.tags.push(tag);
+    },
+
+    updateTag(id, newTag) {
+      const tagToEdit = this.tags.find((tag) => tag.id === id);
+      tagToEdit.name = newTag.name;
+    },
+
+    deleteTag(id) {
+      this.transactions.filter((transaction) => {
+        transaction.tags.find((tag) => tag.id === id);
+
+        transaction.tags = transaction.tags.filter((tag) => {
+          return tag.id !== id;
+        });
+      });
+      this.tags = this.tags.filter((tag) => {
+        return tag.id !== id;
+      });
+    },
   }
 })
