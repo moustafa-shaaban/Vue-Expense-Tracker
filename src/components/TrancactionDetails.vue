@@ -26,6 +26,14 @@ transactionTags.value = transactionsStore.tags;
 
 transaction.value = transactionsStore.getTransactionById(route.params.id);
 
+const transactionValue = ref(false)
+
+if (transaction.value.type == 'Income') {
+    transactionValue.value = true
+}
+
+
+
 function handleSubmit() {
     try {
         transactionsStore.updateTransaction(route.params.id, transaction.value);
@@ -87,7 +95,7 @@ function confirm(id) {
             <q-card-section class="row items-center q-pb-none q-mb-md" vertical>
                 <div class="text-h6">Edit transaction</div>
                 <q-space />
-                <q-btn-toggle v-model="transaction.type" no-caps rounded unelevated toggle-color="primary" color="white"
+                <q-btn-toggle v-model="transactionValue" no-caps rounded unelevated toggle-color="primary" color="white"
                     text-color="primary" :options="[
                         { label: 'Expense', value: false },
                         { label: 'Income', value: true },

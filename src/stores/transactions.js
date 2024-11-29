@@ -84,7 +84,9 @@ export const useTransactionsStore = defineStore('transactions', {
       const transactionToEdit = this.transactions.find((transaction) => transaction.id === id);
       transactionToEdit.name = newTransaction.name;
       transactionToEdit.amount = newTransaction.amount;
+      transactionToEdit.type = newTransaction.type;
       transactionToEdit.tags = newTransaction.tags;
+  
     },
 
     deleteTransaction(id) {
@@ -113,6 +115,6 @@ export const useTransactionsStore = defineStore('transactions', {
       this.tags = this.tags.filter((tag) => {
         return tag.id !== id;
       });
-    },
+    }
   }
 })

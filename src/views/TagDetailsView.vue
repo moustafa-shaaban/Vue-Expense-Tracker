@@ -1,13 +1,6 @@
-<template>
-    <div>
-
-    </div>
-</template>
-
 <script setup>
-
+import TagDetaills from '@/components/TagDetaills.vue';
 </script>
-
-<style lang="scss" scoped>
-
-</style>
+<template>
+    <TagDetaills />
+</template>

@@ -12,6 +12,7 @@ const router = createRouter({
         { path: '/about', name: 'about', component: () => import('../views/AboutView.vue') },
         { path: '/tags', name: 'tags', component: () => import('../views/TagsView.vue') },
         { path: '/transaction-details/:id', name: 'transaction-details', component: () => import('../views/TransactionDetailsView.vue') },
+        { path: '/tag-details/:id', name: 'tag-details', component: () => import('../views/TagDetailsView.vue') },
       ]
     },
     {
