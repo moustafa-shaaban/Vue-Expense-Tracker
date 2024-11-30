@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, date, Notify } from 'quasar';
 import Multiselect from 'vue-multiselect';
@@ -17,6 +17,7 @@ const transaction = ref({
     name: '',
     amount: '',
     type: '',
+    dateAdded: '',
     tags: [],
 });
 
@@ -32,6 +33,15 @@ if (transaction.value.type == 'Income') {
     transactionValue.value = true
 }
 
+watch(transactionValue, () => {
+    if (transactionValue.value) {
+        transaction.value.type = 'Income'
+        transaction.value.amount = Math.abs(transaction.value.amount)
+    } else {
+        transaction.value.type = 'Expense'
+        transaction.value.amount = -Math.abs(transaction.value.amount)
+    }
+})
 
 
 function handleSubmit() {
@@ -104,19 +114,51 @@ function confirm(id) {
 
             <q-card-section>
                 <q-form @submit.prevent="handleSubmit">
-                    <q-input filled v-model="transaction.name" label="transaction Title" required lazy-rules
-                        :rules="[val => val && val.length > 0 || 'transaction Title is required']" />
+                    <div v-if="transactionValue">
+                        <q-input autocomplete filled v-model="transaction.name" label="Income Name" required lazy-rules
+                            :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
 
-                    <q-input filled v-model="transaction.amount" type="number" required label="transaction Content"
-                        lazy-rules :rules="[val => val && val.length > 0 || 'transaction Content is required']" />
+                        <q-input filled v-model.number="transaction.amount" type="number" required
+                            label="Income Amount" />
+                    </div>
 
-                    <div class="q-my-md"><label class="typo__label"
+                    <div v-else>
+                        <q-input autocomplete filled v-model="transaction.name" label="Expense Name" required lazy-rules
+                            :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
+
+                        <q-input filled v-model.number="transaction.amount" type="number" required
+                            label="Expense Amount" />
+                    </div>
+
+                    <q-btn icon="event" class="q-my-md" round color="primary">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date v-model="transaction.dateAdded">
+                                <div class="row items-center justify-end q-gutter-sm">
+                                    <q-btn label="Cancel" color="primary" flat v-close-popup />
+                                    <q-btn label="OK" color="primary" flat v-close-popup />
+                                </div>
+                            </q-date>
+                        </q-popup-proxy>
+                    </q-btn>
+
+                    <q-select class="q-my-md" filled v-model="transaction.tags" :options="transactionsStore.tags"
+                        option-value="id" option-label="name" map-options>
+                        <template v-slot:no-option>
+                            <q-item>
+                                <q-item-section class="text-grey">
+                                    No results
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-select>
+
+                    <!-- <div class="q-my-md"><label class="typo__label"
                             v-if="transactionsStore.tags.length > 0">Tagging</label>
                         <multiselect class="q-my-md" v-model="transaction.tags" placeholder="Search" label="name"
                             track-by="name" :options="transactionTags" :multiple="true" :close-on-select="false"
                             :clear-on-select="false">
                         </multiselect>
-                    </div>
+                    </div> -->
 
                     <q-separator />
 
@@ -150,7 +192,7 @@ function confirm(id) {
                             </div>
                             <div v-else>
                                 <q-item-label caption lines="1">
-                                    <q-badge clickable rounded color="primary" class="q-mx-xs" :key="index">
+                                    <q-badge clickable rounded color="primary" class="q-mx-xs">
                                         <!-- <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-detail', params: { id: tag.id } }" /> -->
                                         <q-breadcrumbs-el :label="transaction.tags.name" />
                                     </q-badge>

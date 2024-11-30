@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { nanoid } from 'nanoid';
 import { Notify } from 'quasar';
@@ -31,6 +31,16 @@ const router = useRouter();
 //     })
 // }
 
+watch(transactionValue, () => {
+    if (transactionValue.value) {
+        transactionType.value = 'Income'
+        transactionAmount.value = Math.abs(transactionAmount.value)
+    } else {
+        transactionType.value = 'Expense'
+        transactionAmount.value = -Math.abs(transactionAmount.value)
+    }
+})
+
 function handleSubmit() {
     try {
 
@@ -38,6 +48,7 @@ function handleSubmit() {
             transactionType.value = 'Income'
         } else {
             transactionType.value = 'Expense'
+            transactionAmount.value = -Math.abs(transactionAmount.value)
         }
 
         transactionsStore.addTransaction({
@@ -90,22 +101,33 @@ function handleSubmit() {
                         <q-input autocomplete filled v-model="transactionName" label="Income Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
 
-                        <q-input filled v-model="transactionAmount" type="number" required label="Income Amount"
-                            lazy-rules :rules="[val => val && val.length > 0 || 'Income Amount is required']" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required
+                            label="Income Amount" />
                     </div>
 
                     <div v-else>
                         <q-input autocomplete filled v-model="transactionName" label="Expense Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
 
-                        <q-input filled v-model="transactionAmount" type="number" required label="Expense Amount"
-                            lazy-rules :rules="[val => val && val.length > 0 || 'Expense Amount is required']" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required
+                            label="Expense Amount" />
                     </div>
 
-                    <q-date name="dateAdded" v-model="transactionDate" minimal />
+                    <q-btn icon="event" class="q-my-md" round color="primary">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date v-model="transactionDate">
+                                <div class="row items-center justify-end q-gutter-sm">
+                                    <q-btn label="Cancel" color="primary" flat v-close-popup />
+                                    <q-btn label="OK" color="primary" flat v-close-popup />
+                                </div>
+                            </q-date>
+                        </q-popup-proxy>
+                    </q-btn>
+
+                    <!-- <q-date name="dateAdded" v-model="transactionDate" minimal /> -->
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
-                    <q-select class="q-my-md" filled v-model="tags":options="options" option-value="id"
+                    <q-select class="q-my-md" filled v-model="tags" :options="options" option-value="id"
                         option-label="name" map-options>
                         <template v-slot:no-option>
                             <q-item>

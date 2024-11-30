@@ -18,6 +18,14 @@ export const useTransactionsStore = defineStore('transactions', {
   }),
 
   getters: {
+    balance: (state) => {
+      let balance = computed(() => {
+        return state.transactions.reduce((total, transactions) => {
+          return total + parseInt(transactions.amount)
+        }, 0)
+      })
+      return balance
+    },
     getExpenses: (state) => {
       // Source: https://stackoverflow.com/a/43737380
       let expenses = state.transactions.filter((transaction) => transaction.type === 'Expense')
@@ -72,20 +80,17 @@ export const useTransactionsStore = defineStore('transactions', {
 
   actions: {
     addTransaction(transaction) {
+      
       this.transactions.push(transaction);
-      if (transaction.transactionValue) {
-        this.totalAmount = this.totalAmount + Number(transaction.amount)
-      } else {
-        this.totalAmount = this.totalAmount - Number(transaction.amount)
-      }
     },
 
     updateTransaction(id, newTransaction) {
       const transactionToEdit = this.transactions.find((transaction) => transaction.id === id);
-      transactionToEdit.name = newTransaction.name;
-      transactionToEdit.amount = newTransaction.amount;
-      transactionToEdit.type = newTransaction.type;
-      transactionToEdit.tags = newTransaction.tags;
+      // transactionToEdit = newTransaction
+      // transactionToEdit.name = newTransaction.name;
+      // transactionToEdit.amount = newTransaction.amount;
+      // transactionToEdit.type = newTransaction.type;
+      // transactionToEdit.tags = newTransaction.tags;
   
     },
 

@@ -65,7 +65,7 @@ function confirm(id) {
     <q-card class="my-card q-my-md">
       <q-card-section>
         <div class="text-h6">Your Expenses</div>
-        <div class="text-subtitle2">Balance: {{ transactionsStore.totalAmount }}</div>
+        <div class="text-subtitle2">Balance: {{ transactionsStore.balance }}</div>
       </q-card-section>
 
       <q-separator dark />
