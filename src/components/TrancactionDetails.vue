@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, toRaw, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, date, Notify } from 'quasar';
 import Multiselect from 'vue-multiselect';
@@ -10,16 +10,31 @@ const transactionsStore = useTransactionsStore();
 const route = useRoute();
 const router = useRouter();
 
+// const transaction = structuredClone(toRaw(
+//     transactionsStore.transactions.find((item) => item.id === route.params.id)
+// ))
+
+const transaction = JSON.parse(JSON.stringify(
+    transactionsStore.transactions.find((item) => item.id === route.params.id)
+))
+const testTransaction = ref([]);
+
+testTransaction.value = transaction
+
+
+console.log(testTransaction)
+console.log(transaction)
+
 const isEditing = ref(false);
 
-const transaction = ref({
-    id: '',
-    name: '',
-    amount: '',
-    type: '',
-    dateAdded: '',
-    tags: [],
-});
+// const transactionEditForm = ref({
+//     id: '',
+//     name: '',
+//     amount: '',
+//     type: '',
+//     dateAdded: '',
+//     tags: [],
+// });
 
 const transactionTags = ref([]);
 
@@ -35,18 +50,18 @@ if (transaction.value.type == 'Income') {
 
 watch(transactionValue, () => {
     if (transactionValue.value) {
-        transaction.value.type = 'Income'
-        transaction.value.amount = Math.abs(transaction.value.amount)
+        testTransaction.value.type = 'Income'
+        testTransaction.value.amount = Math.abs(transaction.value.amount)
     } else {
-        transaction.value.type = 'Expense'
-        transaction.value.amount = -Math.abs(transaction.value.amount)
+        testTransaction.value.type = 'Expense'
+        testTransaction.value.amount = -Math.abs(transaction.value.amount)
     }
 })
 
 
 function handleSubmit() {
     try {
-        transactionsStore.updateTransaction(route.params.id, transaction.value);
+        transactionsStore.updateTransaction(route.params.id, testTransaction.value);
         isEditing.value = false;
         Notify.create({
             message: 'transaction Updated Successfully',
@@ -115,24 +130,24 @@ function confirm(id) {
             <q-card-section>
                 <q-form @submit.prevent="handleSubmit">
                     <div v-if="transactionValue">
-                        <q-input autocomplete filled v-model="transaction.name" label="Income Name" required lazy-rules
+                        <q-input autocomplete filled v-model="testTransaction.name" label="Income Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transaction.amount" type="number" required
+                        <q-input filled v-model.number="testTransaction.amount" type="number" required
                             label="Income Amount" />
                     </div>
 
                     <div v-else>
-                        <q-input autocomplete filled v-model="transaction.name" label="Expense Name" required lazy-rules
+                        <q-input autocomplete filled v-model="testTransaction.name" label="Expense Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transaction.amount" type="number" required
+                        <q-input filled v-model.number="testTransaction.amount" type="number" required
                             label="Expense Amount" />
                     </div>
 
                     <q-btn icon="event" class="q-my-md" round color="primary">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="transaction.dateAdded">
+                            <q-date v-model="testTransaction.dateAdded">
                                 <div class="row items-center justify-end q-gutter-sm">
                                     <q-btn label="Cancel" color="primary" flat v-close-popup />
                                     <q-btn label="OK" color="primary" flat v-close-popup />

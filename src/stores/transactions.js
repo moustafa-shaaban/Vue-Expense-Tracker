@@ -87,10 +87,11 @@ export const useTransactionsStore = defineStore('transactions', {
     updateTransaction(id, newTransaction) {
       const transactionToEdit = this.transactions.find((transaction) => transaction.id === id);
       // transactionToEdit = newTransaction
-      // transactionToEdit.name = newTransaction.name;
-      // transactionToEdit.amount = newTransaction.amount;
-      // transactionToEdit.type = newTransaction.type;
-      // transactionToEdit.tags = newTransaction.tags;
+      
+      transactionToEdit.name = newTransaction.name;
+      transactionToEdit.amount = newTransaction.amount;
+      transactionToEdit.type = newTransaction.type;
+      transactionToEdit.tags = newTransaction.tags;
   
     },
 
