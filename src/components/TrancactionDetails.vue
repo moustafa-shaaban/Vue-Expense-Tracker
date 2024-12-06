@@ -14,6 +14,10 @@ const router = useRouter();
 //     transactionsStore.transactions.find((item) => item.id === route.params.id)
 // ))
 
+const transactionsTags = ref([]);
+
+transactionsTags.value = transactionsStore.tags;
+
 const transaction = JSON.parse(JSON.stringify(
     transactionsStore.transactions.find((item) => item.id === route.params.id)
 ))
@@ -40,11 +44,11 @@ const transactionTags = ref([]);
 
 transactionTags.value = transactionsStore.tags;
 
-transaction.value = transactionsStore.getTransactionById(route.params.id);
+// transaction.value = transactionsStore.getTransactionById(route.params.id);
 
 const transactionValue = ref(false)
 
-if (transaction.value.type == 'Income') {
+if (testTransaction.value.type == 'Income') {
     transactionValue.value = true
 }
 
@@ -156,8 +160,8 @@ function confirm(id) {
                         </q-popup-proxy>
                     </q-btn>
 
-                    <q-select class="q-my-md" filled v-model="transaction.tags" :options="transactionsStore.tags"
-                        option-value="id" option-label="name" map-options>
+                    <q-select class="q-my-md" filled v-model="transaction.tags" :options="transactionsTags"
+                        option-value="id" option-label="name" multiple map-options>
                         <template v-slot:no-option>
                             <q-item>
                                 <q-item-section class="text-grey">

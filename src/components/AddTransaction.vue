@@ -20,7 +20,7 @@ const transactionsTags = ref([]);
 
 transactionsTags.value = transactionsStore.tags;
 
-const options = ref(transactionsTags.value)
+// const options = ref(transactionsTags.value)
 
 const router = useRouter();
 
@@ -127,8 +127,9 @@ function handleSubmit() {
                     <!-- <q-date name="dateAdded" v-model="transactionDate" minimal /> -->
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
-                    <q-select class="q-my-md" filled v-model="tags" :options="options" option-value="id"
-                        option-label="name" map-options>
+                    <q-select class="q-my-md" filled v-model="tags" :options="transactionsTags" option-value="id"
+                        option-label="name" multiple use-chips
+                         map-options>
                         <template v-slot:no-option>
                             <q-item>
                                 <q-item-section class="text-grey">

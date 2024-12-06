@@ -112,8 +112,6 @@ export const useTransactionsStore = defineStore('transactions', {
 
     deleteTag(id) {
       this.transactions.filter((transaction) => {
-        transaction.tags.find((tag) => tag.id === id);
-
         transaction.tags = transaction.tags.filter((tag) => {
           return tag.id !== id;
         });
@@ -121,6 +119,6 @@ export const useTransactionsStore = defineStore('transactions', {
       this.tags = this.tags.filter((tag) => {
         return tag.id !== id;
       });
-    }
+    },
   }
 })

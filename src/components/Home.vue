@@ -83,22 +83,15 @@ function confirm(id) {
         </q-item-section>
 
         <q-item-section top>
+
           <q-item-label lines="1">
             <span class="text-weight-medium">{{ date.formatDate(transaction.dateAdded, 'DD MMMM YYYY') }}</span>
           </q-item-label>
           <q-item-label caption lines="1">
-            <div v-if="transaction.tags.length > 1">
+            <div>
               <q-badge clickable rounded color="primary" class="q-mx-xs" v-for="tag in transaction.tags" :key="tag.id">
-                <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-detail', params: { id: tag.id } }" />
+                <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
               </q-badge>
-            </div>
-            <div v-else>
-              <q-item-label caption lines="1">
-                <q-badge clickable rounded color="primary" class="q-mx-xs">
-                  <!-- <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-detail', params: { id: tag.id } }" /> -->
-                  <q-breadcrumbs-el :label="transaction.tags.name" :to="{ name: 'tag-details', params: { id: transaction.tags.id } }" />
-                </q-badge>
-              </q-item-label>
             </div>
           </q-item-label>
           <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary">
