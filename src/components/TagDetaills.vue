@@ -12,18 +12,23 @@ const router = useRouter();
 
 const isEditing = ref(false);
 
-const tag = ref({
-    id: '',
-    name: ''
-});
+// const tag = ref({
+//     id: '',
+//     name: ''
+// });
 
-tag.value = transactionsStore.getTagById(route.params.id);
+// tag.value = transactionsStore.getTagById(route.params.id);
 
+const tagItem = ref([])
+
+const tag = JSON.parse(JSON.stringify(transactionsStore.getTagById(route.params.id)));
+
+tagItem.value = tag
 
 function handleSubmit() {
     try {
-        transactionsStore.updateTag(route.params.id, tag.value);
-
+        transactionsStore.updateTag(route.params.id, tagItem.value);
+        router.push({ name: 'tag-details', params: { id: route.params.id } });
         Notify.create({
             message: 'Tag Updated Successfully',
             type: "positive",
@@ -86,7 +91,7 @@ function confirm(id) {
 
             <q-card-section>
                 <q-form @submit.prevent="handleSubmit">
-                    <q-input filled v-model="tag.name" label="Tag Name" required lazy-rules
+                    <q-input filled v-model="tagItem.name" label="Tag Name" required lazy-rules
                         :rules="[val => val && val.length > 0 || 'Tag Name is required']" />
 
 

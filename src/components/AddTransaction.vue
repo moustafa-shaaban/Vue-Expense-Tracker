@@ -101,16 +101,14 @@ function handleSubmit() {
                         <q-input autocomplete filled v-model="transactionName" label="Income Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transactionAmount" type="number" required
-                            label="Income Amount" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required label="Income Amount" />
                     </div>
 
                     <div v-else>
                         <q-input autocomplete filled v-model="transactionName" label="Expense Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transactionAmount" type="number" required
-                            label="Expense Amount" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required label="Expense Amount" />
                     </div>
 
                     <q-btn icon="event" class="q-my-md" round color="primary">
@@ -127,9 +125,23 @@ function handleSubmit() {
                     <!-- <q-date name="dateAdded" v-model="transactionDate" minimal /> -->
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
-                    <q-select class="q-my-md" filled v-model="tags" :options="transactionsTags" option-value="id"
-                        option-label="name" multiple use-chips
-                         map-options>
+                    <q-select 
+                        class="q-my-md" 
+                        filled 
+                        dense 
+                        options-dense 
+                        label="Tags" 
+                        counter 
+                        v-model="tags"
+                        :options="transactionsTags" 
+                        option-value="id" 
+                        option-label="name" 
+                        multiple 
+                        use-chips 
+                        map-options
+                        clearable
+                    >
+
                         <template v-slot:no-option>
                             <q-item>
                                 <q-item-section class="text-grey">

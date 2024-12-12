@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 import { nanoid } from 'nanoid'
@@ -106,13 +106,27 @@ export const useTransactionsStore = defineStore('transactions', {
     },
 
     updateTag(id, newTag) {
+      let transactionsArray = this.transactions.filter((transaction) => {
+        return transaction.tags.find(((tag) => tag.id === id))
+      });
+
+      transactionsArray.forEach((value) => {
+        let tagsArray = value.tags
+
+        tagsArray.forEach((item) => {
+          item.name = newTag.name
+        })
+        // console.log(index);
+      });
+
       const tagToEdit = this.tags.find((tag) => tag.id === id);
       tagToEdit.name = newTag.name;
+
     },
 
     deleteTag(id) {
       this.transactions.filter((transaction) => {
-        transaction.tags = transaction.tags.filter((tag) => {
+        transaction.tags = transaction.tags.find((tag) => {
           return tag.id !== id;
         });
       });

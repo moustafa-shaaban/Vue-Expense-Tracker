@@ -26,8 +26,8 @@ const testTransaction = ref([]);
 testTransaction.value = transaction
 
 
-console.log(testTransaction)
-console.log(transaction)
+// console.log(testTransaction)
+// console.log(transaction)
 
 const isEditing = ref(false);
 
@@ -160,8 +160,8 @@ function confirm(id) {
                         </q-popup-proxy>
                     </q-btn>
 
-                    <q-select class="q-my-md" filled v-model="transaction.tags" :options="transactionsTags"
-                        option-value="id" option-label="name" multiple map-options>
+                    <q-select class="q-my-md" filled v-model="testTransaction.tags" :options="transactionsTags"
+                        option-value="id" option-label="name" multiple use-chips map-options>
                         <template v-slot:no-option>
                             <q-item>
                                 <q-item-section class="text-grey">
@@ -202,22 +202,16 @@ function confirm(id) {
                         <div class="text-h6">{{ transaction.name }}</div>
                         <div class="text-subtitle2">
                             {{ date.formatDate(transaction.dateAdded, 'DD MMMM YYYY') }}
-                            <div v-if="transaction.tags.length > 1">
-                                <q-badge clickable rounded color="primary" class="q-mx-xs"
-                                    v-for="tag in transaction.tags">
+                        </div>
+                        <q-item-label caption lines="1">
+                            <div>
+                                <q-badge clickable rounded color="primary" class="q-mx-xs" v-for="tag in transaction.tags"
+                                    :key="tag.id">
                                     <q-breadcrumbs-el :label="tag.name"
-                                        :to="{ name: 'tag-detail', params: { id: tag.id } }" />
+                                        :to="{ name: 'tag-details', params: { id: tag.id } }" />
                                 </q-badge>
                             </div>
-                            <div v-else>
-                                <q-item-label caption lines="1">
-                                    <q-badge clickable rounded color="primary" class="q-mx-xs">
-                                        <!-- <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-detail', params: { id: tag.id } }" /> -->
-                                        <q-breadcrumbs-el :label="transaction.tags.name" />
-                                    </q-badge>
-                                </q-item-label>
-                            </div>
-                        </div>
+                        </q-item-label>
                     </div>
                 </div>
             </q-card-section>
