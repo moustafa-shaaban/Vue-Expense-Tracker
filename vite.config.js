@@ -16,5 +16,5 @@ export default defineConfig({
       
     })
   ],
-  base: 'https://moustafashaaban.github.io/Vue-Expense-Tracker/',
+  base: '/Vue-Expense-Tracker/',
 })
