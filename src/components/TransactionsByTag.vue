@@ -54,7 +54,7 @@ const transactions = transactionsStore.getTransactionsByTag(route.params.id)
             </q-card>
         </div>
         <div v-else>
-            <p>No Tags that has this tag Found, Click on the plus (+) sign to add a new note</p>
+            <p>No Transactions that has this tag Found, Click on the plus (+) sign to add a new transaction.</p>
         </div>
 
         <q-page-sticky position="bottom-right" :offset="[18, 18]">

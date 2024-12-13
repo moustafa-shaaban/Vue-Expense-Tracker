@@ -1,7 +1,10 @@
 <script setup>
+import { ref } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
 
 import { useTransactionsStore } from '@/stores/transactions';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
 const transactionsStore = useTransactionsStore();
 
@@ -38,25 +41,28 @@ function confirm(id) {
 
 // let groupedTransactions = transactionsStore.groups;
 
-// const filter = ref('');
+const filter = ref('');
 
-// const columns = [
-//   {
-//     name: 'name',
-//     label: "Name",
-//     required: true,
-//     align: 'left',
-//     field: row => row.name,
-//     format: val => `${val}`,
-//     sortable: true
-//   },
-//   { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
-//   { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
-//   { name: 'Tags', label: 'Tags', field: row => row.tags },
-//   { name: 'delete', label: 'Actions' },
-// ]
+const columns = [
+  {
+    name: 'name',
+    label: "Name",
+    required: true,
+    align: 'left',
+    field: row => row.name,
+    format: val => `${val}`,
+    sortable: true
+  },
+  { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
+  { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
+  //{ name: 'Tags', label: 'Tags', field: row => row.tags },
+]
 
-// const rows = transactions;
+const transactions = computed(() => {
+  return transactionsStore.transactions
+})
+
+const rows = transactions
 
 </script>
 
@@ -76,7 +82,72 @@ function confirm(id) {
       </q-card-actions>
     </q-card>
 
-    <q-list>
+    <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id"
+      :filter="filter" no-data-label="No Transactions Found">
+
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+
+      <template v-slot:item="props">
+        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+          <q-card>
+            <q-card-section>
+              <div class="row items-center no-wrap">
+                <div class="col">
+                  <div class="text-h6">{{ props.row.name }}</div>
+                  <div class="text-subtitle2">{{ date.formatDate(props.row.dateAdded, "YYYY-MM-DD") }}</div>
+                  <!-- <q-item-label caption>
+                    <div>
+                      <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in props.row.tags"
+                        :key="tag.id">
+                        <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
+                      </q-badge>
+                    </div>
+                  </q-item-label> -->
+                </div>
+                <div class="col-auto">
+                  <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in props.row.tags"
+                        :key="tag.id">
+                        <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
+                      </q-badge>
+                  <q-btn color="grey-7" round flat icon="more_vert">
+                    <q-menu cover auto-close>
+                      <q-list>
+                        <q-item clickable :to="{ name: 'transaction-details', params: { id: props.row.id } }">
+                          <q-item-section>Details</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </div>
+              </div>
+            </q-card-section>
+
+            <q-separator />
+
+            <q-card-section>
+              {{ props.row.amount }} $
+            </q-card-section>
+
+            <q-separator />
+
+            <q-card-actions>
+              <q-btn flat :to="{ name: 'transaction-details', params: { id: props.row.id } }">Details</q-btn>
+              <q-btn flat @click="confirm(props.row.id)">Delete</q-btn>
+            </q-card-actions>
+          </q-card>
+        </div>
+      </template>
+
+
+    </q-table>
+
+    <!-- <q-list v-if="transactionsStore.transactions.length">
       <q-item v-for="transaction in transactionsStore.transactions" :key="transaction.id">
         <q-item-section top class="col-2 gt-sm">
           <q-item-label class="q-mt-sm">{{ transaction.name }}</q-item-label>
@@ -105,11 +176,15 @@ function confirm(id) {
               size="12px" flat dense round icon="edit" />
             <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="confirm(transaction.id)" />
 
-            <!-- <q-btn size="12px" flat dense round icon="more_vert" /> -->
+            <q-btn size="12px" flat dense round icon="more_vert" />
           </div>
         </q-item-section>
       </q-item>
     </q-list>
+    <p v-else>
+      No Transactions Found. Click on the plus sign to add a new one
+    </p> 
+  -->
     <!-- <q-table :grid="$q.screen.xs" flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id"
       :filter="filter">
       <template v-slot:bottom-left>
@@ -141,7 +216,7 @@ function confirm(id) {
 
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add" color="primary" :to="{ name: 'add-expense' }">
+      <q-btn fab icon="add" color="primary" :to="{ name: 'add-transaction' }">
       </q-btn>
     </q-page-sticky>
   </q-page>

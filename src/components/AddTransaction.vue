@@ -125,22 +125,9 @@ function handleSubmit() {
                     <!-- <q-date name="dateAdded" v-model="transactionDate" minimal /> -->
                     <!-- <q-toggle checked-icon="add" unchecked-icon="remove" color="blue" v-model="expenseValue" /> -->
 
-                    <q-select 
-                        class="q-my-md" 
-                        filled 
-                        dense 
-                        options-dense 
-                        label="Tags" 
-                        counter 
-                        v-model="tags"
-                        :options="transactionsTags" 
-                        option-value="id" 
-                        option-label="name" 
-                        multiple 
-                        use-chips 
-                        map-options
-                        clearable
-                    >
+                    <q-select class="q-my-md" filled dense options-dense label="Tags" counter v-model="tags"
+                        :options="transactionsTags" option-value="id" option-label="name" multiple use-chips map-options
+                        clearable>
 
                         <template v-slot:no-option>
                             <q-item>
@@ -165,6 +152,10 @@ function handleSubmit() {
                 </q-form>
             </q-card-section>
         </q-card>
+        <q-page-sticky position="bottom-left" :offset="[18, 18]">
+            <q-btn type="submit" fab icon="arrow_back" :to="{ name: 'home' }" color="negative">
+            </q-btn>
+        </q-page-sticky>
     </q-page>
 </template>
 

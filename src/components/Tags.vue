@@ -112,6 +112,10 @@ const rows = transactionsStore.tags;
                 </q-tr> -->
       </template>
     </q-table>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="add" color="primary" :to="{ name: 'add-tag' }">
+      </q-btn>
+    </q-page-sticky>
   </q-page>
 
   <!-- 
