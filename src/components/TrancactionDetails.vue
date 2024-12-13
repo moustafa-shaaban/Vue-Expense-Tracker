@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { Dialog, date, Notify } from 'quasar';
 import Multiselect from 'vue-multiselect';
 
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 const route = useRoute();

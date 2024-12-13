@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, Notify } from 'quasar';
 
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 const route = useRoute();

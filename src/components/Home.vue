@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
 
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 

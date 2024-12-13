@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { nanoid } from 'nanoid';
 import { Notify } from 'quasar';
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 import Multiselect from 'vue-multiselect';
 
 const transactionsStore = useTransactionsStore();

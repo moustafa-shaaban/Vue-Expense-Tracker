@@ -1,5 +1,5 @@
 <script setup>
-import AddTransaction from '@/components/AddTransaction.vue';
+import AddTransaction from '../components/AddTransaction.vue';
 </script>
 <template>
      <AddTransaction />

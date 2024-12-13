@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-import TransactionsByTag from '@/components/TransactionsByTag.vue';
+import TransactionsByTag from '../components/TransactionsByTag.vue';
 </script>

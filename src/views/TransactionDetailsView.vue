@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import TrancactionDetails from '@/components/TrancactionDetails.vue';
+import TrancactionDetails from '../components/TrancactionDetails.vue';
 
 </script>
 

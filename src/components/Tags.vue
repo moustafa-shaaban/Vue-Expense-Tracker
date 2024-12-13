@@ -1,5 +1,5 @@
 <script setup>
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 import { ref } from 'vue';
 import { Dialog, Notify } from 'quasar';
 import { useRouter } from 'vue-router';

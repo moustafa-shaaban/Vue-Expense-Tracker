@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from "vue-router";
 import { nanoid } from 'nanoid';
 import { Notify } from 'quasar';
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 

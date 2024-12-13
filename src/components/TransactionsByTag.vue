@@ -1,5 +1,5 @@
 <script setup>
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../stores/transactions';
 import { useRoute } from 'vue-router';
 import { date } from 'quasar';
 

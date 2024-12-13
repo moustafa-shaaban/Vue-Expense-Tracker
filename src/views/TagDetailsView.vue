@@ -1,5 +1,5 @@
 <script setup>
-import TagDetaills from '@/components/TagDetaills.vue';
+import TagDetaills from '../components/TagDetaills.vue';
 </script>
 <template>
     <TagDetaills />
