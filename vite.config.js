@@ -7,6 +7,7 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/Vue_Expenses_App/',
   plugins: [
     vue({
       template: { transformAssetUrls }
