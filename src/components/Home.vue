@@ -150,5 +150,4 @@ function confirm(id) {
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  
 </style>

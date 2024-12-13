@@ -121,6 +121,7 @@ function confirm(id) {
 
             <q-card-actions>
                 <q-btn color="primary" type="button" size="sm" @click="isEditing = true">Edit</q-btn>
+                <q-btn color="negative" type="button" size="sm" :to="{ name: 'transactions-by-tag', params: { id: tag.id } }">Transactions with this tag</q-btn>
                 <q-btn color="negative" type="button" size="sm" @click="confirm(tag.id)">Delete</q-btn>
             </q-card-actions>
         </q-card>

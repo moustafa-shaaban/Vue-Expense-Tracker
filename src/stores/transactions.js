@@ -80,7 +80,6 @@ export const useTransactionsStore = defineStore('transactions', {
 
   actions: {
     addTransaction(transaction) {
-      
       this.transactions.push(transaction);
     },
 

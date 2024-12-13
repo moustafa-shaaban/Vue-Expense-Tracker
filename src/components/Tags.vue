@@ -2,8 +2,11 @@
 import { useTransactionsStore } from '@/stores/transactions';
 import { ref } from 'vue';
 import { Dialog, Notify } from 'quasar';
+import { useRouter } from 'vue-router';
 
 const transactionsStore = useTransactionsStore();
+
+const router = useRouter()
 
 const filter = ref('');
 
@@ -17,7 +20,7 @@ const columns = [
     sortable: true
   },
   {
-    name: "action",
+    name: "actions",
     align: "left",
     required: true,
     field: ""
@@ -27,37 +30,37 @@ const columns = [
 
 const rows = transactionsStore.tags;
 
-function confirm(id) {
-  Dialog.create({
-    dark: true,
-    title: 'Confirm',
-    color: 'primary',
-    message: 'Delete this tag?, Your Notes that has this tag will not be deleted',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    try {
-      transactionsStore.deleteTag(id)
-      router.push('/tags');
-      Notify.create({
-        message: 'Tag Deleted Successfully',
-        type: "positive",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    } catch (error) {
-      console.log(error)
-      Notify.create({
-        message: error.message,
-        type: "negative",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    }
-  })
-};
+// function confirm(id) {
+//   Dialog.create({
+//     dark: true,
+//     title: 'Confirm',
+//     color: 'primary',
+//     message: 'Delete this tag?, Your Notes that has this tag will not be deleted',
+//     cancel: true,
+//     persistent: true
+//   }).onOk(() => {
+//     try {
+//       transactionsStore.deleteTag(id)
+      
+//       Notify.create({
+//         message: 'Tag Deleted Successfully',
+//         type: "positive",
+//         actions: [
+//           { icon: 'close', color: 'white', round: true, }
+//         ]
+//       })
+//     } catch (error) {
+//       console.log(error)
+//       Notify.create({
+//         message: error.message,
+//         type: "negative",
+//         actions: [
+//           { icon: 'close', color: 'white', round: true, }
+//         ]
+//       })
+//     }
+//   })
+// };
 </script>
 
 <template>
@@ -73,27 +76,27 @@ function confirm(id) {
         </q-input>
       </template>
 
-      <template v-slot:body-cell-action="props">
+      <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn dense flat round color="blue" field="edit" icon="edit"
             :to="{ name: 'tag-details', params: { id: props.row.id } }" />
-          <q-btn dense flat round color="negative" field="edit" icon="delete" @click="confirm" />
+          <!-- <q-btn dense flat round color="negative" field="edit" icon="delete" @click="confirm" /> -->
         </q-td>
       </template>
 
       <template v-slot:item="props">
         <div class="">
-          <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+          <div class="">
             <q-card class="q-mt-md" :props="props">
-            <q-card-section>
-              <div class="text-h6">{{ props.row.name }}</div>
-              <div class="text-subtitle2">by John Doe</div>
-            </q-card-section>
+              <q-card-section>
+                <div class="text-h6">{{ props.row.name }}</div>
+                <!-- <div class="text-subtitle2">by John Doe</div> -->
+              </q-card-section>
 
             <q-card-actions>
-              <q-btn dense flat round color="blue" field="edit" icon="edit"
+              <q-btn dense flat round color="warning" field="edit" icon="edit"
                 :to="{ name: 'tag-details', params: { id: props.row.id } }" />
-              <q-btn dense flat round color="blue" field="edit" icon="delete" @click="confirm" />
+              <!-- <q-btn dense flat round color="negative" field="edit" icon="delete" @click="confirm(props.row.id)" /> -->
             </q-card-actions>
           </q-card>
           </div>
