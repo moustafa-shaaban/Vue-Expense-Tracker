@@ -1,6 +1,6 @@
 <template>
     <q-layout view="hHh Lpr lff" class="shadow-2 rounded-borders">
-      <q-header elevated>
+      <q-header elevated :class="Dark.isActive ? 'bg-dark' : 'bg-white text-dark'">
         <q-toolbar>
           <q-btn
             flat
@@ -22,7 +22,7 @@
   
       <q-drawer v-model="leftDrawerOpen" overlay :width="200" :breakpoint="700" side="left" behavior="desktop" bordered>
           <q-scroll-area class="fit">
-            <q-list padding class="menu-list" :class="Dark.isActive ? 'text-white' : 'text-dark'">
+            <q-list padding class="menu-list">
               <q-item exact clickable v-ripple to="/">
                 <q-item-section avatar>
                   <q-icon name="home" />
@@ -94,12 +94,12 @@
   
   const leftDrawerOpen = ref(false)
   
-  const darkQuery = '(prefers-color-scheme: dark)';
-  const queryList = window.matchMedia(darkQuery);
-  Dark.set(queryList.matches);
-  queryList.addEventListener('change', (event) => {
-      Dark.set(event.matches);
-  });
+  // const darkQuery = '(prefers-color-scheme: dark)';
+  // const queryList = window.matchMedia(darkQuery);
+  // Dark.set(queryList.matches);
+  // queryList.addEventListener('change', (event) => {
+  //     Dark.set(event.matches);
+  // });
   
   function toggleDarkMode() {
     Dark.toggle();

@@ -26,7 +26,10 @@ app.use(Quasar, {
         Notify,
         Dialog,
         Dark,
-    } // import Quasar plugins and add here
+    }, // import Quasar plugins and add here
+    config: {
+        dark: "auto"
+    }
 })
 
 app.use(createPinia())
