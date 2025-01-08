@@ -13,13 +13,46 @@
                 <q-btn>Expenses: {{ transactionsStore.getExpenses }} $</q-btn>
             </q-card-actions>
         </q-card>
+
+        <q-card class="my-card" flat bordered>
+            <q-card-section>
+                <div class="text-h6">Our Changing Planet</div>
+                <div class="text-subtitle2">by John Doe</div>
+            </q-card-section>
+
+            <q-tabs v-model="tab" class="text-teal">
+                <q-tab label="Expenses" name="one" />
+                <q-tab label="Expenses and Incomes" name="two" />
+            </q-tabs>
+
+            <q-separator />
+
+            <q-tab-panels v-model="tab" animated>
+                <q-tab-panel name="one">
+                    <div v-if="transactionsStore.transactions.length > 0">
+                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
+                        <Pie :data="expensesChartData" :options="options" />
+                    </div>
+                    <div v-else>
+                        <p>No Transactions Found</p>
+                    </div>
+                </q-tab-panel>
+
+                <q-tab-panel name="two">
+                    <div v-if="transactionsStore.transactions.length > 0">
+                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
+                        <Pie :data="expensesAndIncomesData" :options="options" />
+                    </div>
+                    <div v-else>
+                        <p>No Transactions Found</p>
+                    </div>
+                </q-tab-panel>
+            </q-tab-panels>
+        </q-card>
         <!-- Spurce: https://stackblitz.com/github/apertureless/vue-chartjs -->
-        <div v-if="transactionsStore.transactions.length > 0">
-            <Pie :data="data" :options="options" />
-        </div>
-        <div v-else>
-            <p>No Transactions Found</p>
-        </div>
+
+
+
     </q-page>
 
 </template>
@@ -34,14 +67,63 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const transactionsStore = useTransactionsStore();
 
-const slide = ref('style')
+const tab = ref('one')
 
-const data = {
+const expensesAndIncomesData = {
     labels: ['Incomes', 'Expenses'],
     datasets: [
         {
             backgroundColor: ['Blue', 'Red'],
             data: [transactionsStore.getIncomes.value, transactionsStore.getExpenses.value],
+        }
+    ]
+}
+
+
+// Source: https://youtu.be/hqTQ4Dlswco
+let expensesMap = new Map();
+
+let expenses = transactionsStore.$state.transactions.filter((transaction) => transaction.type === 'Expense')
+
+// attendees.forEach(function(attendee){
+//    if(attendee.isArray()) {
+//       attendee.forEach(function(subattendee) {
+//          console.log(subattendee):
+//       });
+//    }
+// });
+
+expenses.forEach(function (expense) {
+
+    expense.tags.forEach(function (tag) {
+        if (expensesMap.has(tag.name)) {
+            const oldAmount = expensesMap.get(tag.name);
+            expensesMap.set(tag.name, oldAmount + expense.amount);
+        } else {
+            expensesMap.set(tag.name, expense.amount);
+        }
+    })
+})
+
+
+// expenses.forEach(({ tags, amount }) => {
+//     if (expensesMap.has(tags.name)) {
+//         const oldAmount = expensesMap.get(tags.name);
+//         expensesMap.set(tags.name, oldAmount + amount);
+//     } else {
+//         expensesMap.set(tags.name, amount);
+//     }
+// });
+
+// console.log(expensesMap)
+
+
+const expensesChartData = {
+    labels: Array.from(expensesMap.keys()),
+    datasets: [
+        {
+            data: Array.from(expensesMap.values()),
+            backgroundColor: ['Blue', 'Red'],
         }
     ]
 }
@@ -56,4 +138,5 @@ const options = {
 <style lang="sass" scoped>
 .my-card
   width: 100%
+  max-width: 800px
 </style>
