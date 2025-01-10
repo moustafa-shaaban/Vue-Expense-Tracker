@@ -16,12 +16,15 @@
 
         <q-card class="my-card" flat bordered>
             <q-card-section>
-                <div class="text-h6">Our Changing Planet</div>
-                <div class="text-subtitle2">by John Doe</div>
+                <div class="text-h6">Data Pie Charts</div>
+                <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
+                    in your data</div>
+                <div class="text-subtitle2">Currently it has two sections, Visualizng Incomes and Expenses, and Visualizing
+                    Expenses by tags</div>
             </q-card-section>
 
             <q-tabs v-model="tab" class="text-teal">
-                <q-tab label="Expenses" name="one" />
+                <q-tab label="Expenses By Tags" name="one" />
                 <q-tab label="Expenses and Incomes" name="two" />
             </q-tabs>
 
@@ -54,7 +57,6 @@
 
 
     </q-page>
-
 </template>
 
 <script setup>
@@ -138,5 +140,4 @@ const options = {
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 800px
 </style>
