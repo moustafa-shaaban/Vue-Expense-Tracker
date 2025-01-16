@@ -1,10 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
 
 import { useTransactionsStore } from '../stores/transactions';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
 
 const transactionsStore = useTransactionsStore();
 
@@ -82,8 +80,8 @@ const rows = transactions
       </q-card-actions>
     </q-card>
 
-    <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id"
-      :filter="filter" no-data-label="No Transactions Found">
+    <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id" :filter="filter"
+      no-data-label="No Transactions Found">
 
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -112,9 +110,9 @@ const rows = transactions
                 </div>
                 <div class="col-auto">
                   <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in props.row.tags"
-                        :key="tag.id">
-                        <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
-                      </q-badge>
+                    :key="tag.id">
+                    <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
+                  </q-badge>
                   <q-btn color="grey-7" round flat icon="more_vert">
                     <q-menu cover auto-close>
                       <q-list>

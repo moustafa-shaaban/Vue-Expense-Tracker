@@ -24,6 +24,8 @@ Expenses tracker app built using:
 
 * Search for transactions by transaction name or amount.
 
+* Visualize Transactions Data on Pie Charts to track incomes, expenses, and expenses by tags
+
 
 ### To get started with this project
 
