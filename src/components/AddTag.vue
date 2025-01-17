@@ -42,17 +42,16 @@ function handleSubmit() {
 
 <template>
     <q-page class="flex flex-center column q-my-lg">
-        <q-card flat bordered class="my-card">
+        <q-card flat bordered class="form-card">
             <q-card-section class="row items-center q-pb-none">
                 <div class="text-h6 q-mb-md">Add Tag</div>
                 <q-space />
             </q-card-section>
 
-
             <q-card-section>
                 <q-form @submit.prevent="handleSubmit">
                     <q-input filled v-model="tagName" label="Tag Name" required lazy-rules
-                        :rules="[val => val && val.length > 0 || 'Tag Name is required']"  autofocus />
+                        :rules="[val => val && val.length > 0 || 'Tag Name is required']" autofocus />
 
                     <q-page-sticky position="bottom-right" :offset="[18, 18]">
                         <q-btn type="submit" fab icon="done" color="primary">
@@ -65,6 +64,7 @@ function handleSubmit() {
                     </q-page-sticky>
                 </q-form>
             </q-card-section>
+
         </q-card>
     </q-page>
 </template>
