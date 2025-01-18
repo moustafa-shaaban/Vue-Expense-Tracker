@@ -9,7 +9,7 @@ Expenses tracker app built using:
 
 ### Live Preview
 
-[Vue Expense Tracker App](https://moustafashaaban.github.io/Vue-Expense-Tracker/)
+[Vue Expense Tracker App](https://moustafa-shaaban.github.io/Vue-Expense-Tracker/)
 
 
 ###  Project Goals
@@ -29,7 +29,7 @@ Expenses tracker app built using:
 
 ### To get started with this project
 
-* Clone the repository: git clone https://github.com/MoustafaShaaban/Vue-Expense-Tracker.git
+* Clone the repository: git clone https://github.com/Moustafa-Shaaban/Vue-Expense-Tracker.git
 
 * Change directory to Vue-Expense-Tracker directory ``` cd Vue-Expense-Tracker ```
 
