@@ -50,6 +50,11 @@ const router = createRouter({
           name: "charts",
           component: () => import("../views/ChartsView.vue"),
         },
+        {
+          path: "/apex-charts",
+          name: "apex-charts",
+          component: () => import("../views/ApexChartsView.vue"),
+        },
       ],
     },
     // {

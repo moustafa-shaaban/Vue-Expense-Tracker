@@ -52,7 +52,17 @@
             </q-item-section>
 
             <q-item-section>
-              Charts
+              Chart.js Charts
+            </q-item-section>
+          </q-item>
+
+          <q-item exact clickable v-ripple to="/apex-charts">
+            <q-item-section avatar>
+              <q-icon name="menu" />
+            </q-item-section>
+
+            <q-item-section>
+              ApexCharts
             </q-item-section>
           </q-item>
 
