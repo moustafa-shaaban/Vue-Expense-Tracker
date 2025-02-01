@@ -1,8 +1,7 @@
 <script setup>
-import { ref, toRaw, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, date, Notify } from 'quasar';
-import Multiselect from 'vue-multiselect';
 
 import { useTransactionsStore } from '../stores/transactions';
 

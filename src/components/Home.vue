@@ -56,11 +56,7 @@ const columns = [
   // { name: 'Tags', label: 'Tags', field: row => row.tags },
 ]
 
-const transactions = computed(() => {
-  return transactionsStore.transactions
-})
-
-const rows = transactions.value;
+const rows = transactionsStore.transactions;
 
 function wrapCsvValue(val, formatFn, row) {
   let formatted = formatFn !== void 0
