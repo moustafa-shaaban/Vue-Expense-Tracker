@@ -1,5 +1,63 @@
+<script setup>
+import { ref, watch, computed } from 'vue'
+import { Dark, useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+
+// import { useNotesStore } from 'src/stores/notes-store';
+
+defineOptions({
+  name: 'MainLayout'
+})
+
+const { locale } = useI18n();
+const $q = useQuasar();
+
+const leftDrawerOpen = ref(false)
+
+// const darkQuery = '(prefers-color-scheme: dark)';
+// const queryList = window.matchMedia(darkQuery);
+// Dark.set(queryList.matches);
+// queryList.addEventListener('change', (event) => {
+//     Dark.set(event.matches);
+// });
+
+// Initialize dark mode from localStorage
+const darkMode = localStorage.getItem('darkMode') === 'true';
+$q.dark.set(darkMode);
+
+const toggleDarkMode = () => {
+  $q.dark.toggle();
+  localStorage.setItem('darkMode', $q.dark.isActive);
+};
+
+// Initialize locale from localStorage
+const savedLocale = localStorage.getItem('locale') || 'en';
+locale.value = savedLocale;
+
+// Watch for locale changes and update RTL
+watch(locale, (newLocale) => {
+  localStorage.setItem('locale', newLocale);
+  localStorage.getItem('locale')
+  $q.lang.set({ rtl: newLocale === 'ar' }); // Enable/disable RTL
+});
+
+// Compute layout direction based on locale
+const layoutDirection = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'));
+
+watch(locale, (newLocale) => {
+  localStorage.setItem('locale', newLocale);
+  $q.lang.set({ rtl: newLocale === 'ar' }); // Enable/disable RTL
+  document.body.classList.toggle('rtl', newLocale === 'ar'); // Add/remove RTL class
+});
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+// const notesStore = useNotesStore();
+</script>
 <template>
-  <q-layout view="hHh Lpr lff" class="shadow-2 rounded-borders">
+  <q-layout :dir="layoutDirection" view="hHh Lpr lff" class="shadow-2 rounded-borders">
     <q-header elevated :class="Dark.isActive ? 'bg-dark' : 'bg-white text-dark'">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
@@ -9,7 +67,11 @@
         </q-toolbar-title>
 
         <q-space />
-
+        <q-btn flat round :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode" />
+        <q-select v-model="locale" :options="[
+          { label: 'English', value: 'en' },
+          { label: 'العربية', value: 'ar' },
+        ]" dense options-dense emit-value map-options />
       </q-toolbar>
     </q-header>
 
@@ -94,33 +156,3 @@
     </q-page-container>
   </q-layout>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { Dark } from 'quasar';
-
-// import { useNotesStore } from 'src/stores/notes-store';
-
-defineOptions({
-  name: 'MainLayout'
-})
-
-const leftDrawerOpen = ref(false)
-
-// const darkQuery = '(prefers-color-scheme: dark)';
-// const queryList = window.matchMedia(darkQuery);
-// Dark.set(queryList.matches);
-// queryList.addEventListener('change', (event) => {
-//     Dark.set(event.matches);
-// });
-
-function toggleDarkMode() {
-  Dark.toggle();
-};
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-// const notesStore = useNotesStore();
-</script>

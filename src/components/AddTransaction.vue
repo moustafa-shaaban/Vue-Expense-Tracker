@@ -83,7 +83,7 @@ function handleSubmit() {
 }
 </script>
 <template>
-    <q-page class="flex flex-center column q-my-lg">
+    <q-page :dir="$q.lang.rtl ? 'rtl' : 'ltr'" class="flex flex-center column q-my-lg">
         <q-card flat bordered class="form-card">
             <q-card-section class="row items-center q-pb-none">
                 <div class="text-h6 q-mb-md">Add Transaction</div>
@@ -101,14 +101,16 @@ function handleSubmit() {
                         <q-input autocomplete filled v-model="transactionName" label="Income Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Income Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transactionAmount" type="number" required label="Income Amount" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required
+                            label="Income Amount" />
                     </div>
 
                     <div v-else>
                         <q-input autocomplete filled v-model="transactionName" label="Expense Name" required lazy-rules
                             :rules="[val => val && val.length > 0 || 'Expense Name is required']" autofocus />
 
-                        <q-input filled v-model.number="transactionAmount" type="number" required label="Expense Amount" />
+                        <q-input filled v-model.number="transactionAmount" type="number" required
+                            label="Expense Amount" />
                     </div>
 
                     <q-btn icon="event" class="q-my-md" round color="primary">

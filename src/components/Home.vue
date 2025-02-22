@@ -1,18 +1,44 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { date, Dialog, Notify, exportFile } from 'quasar'
-
+import { ref, onMounted, computed } from 'vue';
+import { date, Dialog, Notify, exportFile, useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n';
 import { useTransactionsStore } from '../stores/transactions';
+import { wrapCsvValue } from '@/utils/utils';
 
 const transactionsStore = useTransactionsStore();
 
+const $q = useQuasar()
+
+const confirmDialog = ref(false)
+
+function deleteTransaction(id) {
+  try {
+    transactionsStore.deleteTransaction(id);
+    confirmDialog.value = false
+    Notify.create({
+      message: 'Transaction Deleted Successfully',
+      type: "positive",
+      actions: [
+        { icon: 'close', color: 'white', round: true, }
+      ]
+    })
+  } catch (error) {
+    Notify.create({
+      message: error.message,
+      type: "negative",
+      actions: [
+        { icon: 'close', color: 'white', round: true, }
+      ]
+    })
+  }
+}
 
 function confirm(id) {
   Dialog.create({
     dark: true,
-    title: 'Confirm',
+    title: 'confirm',
     color: 'primary',
-    message: 'Are you sure you want to delete this transaction?',
+    message: 'confirmMessage',
     cancel: true,
     persistent: true
   }).onOk(() => {
@@ -58,25 +84,7 @@ const columns = [
 
 const rows = transactionsStore.transactions;
 
-function wrapCsvValue(val, formatFn, row) {
-  let formatted = formatFn !== void 0
-    ? formatFn(val, row)
-    : val
 
-  formatted = formatted === void 0 || formatted === null
-    ? ''
-    : String(formatted)
-
-  formatted = formatted.split('"').join('""')
-  /**
-   * Excel accepts \n and \r in strings, but some other CSV parsers do not
-   * Uncomment the next two lines to escape new lines
-   */
-  // .split('\n').join('\\n')
-  // .split('\r').join('\\r')
-
-  return `"${formatted}"`
-}
 
 function exportTable() {
   // naive encoding to csv format
@@ -111,28 +119,30 @@ function exportTable() {
   <q-page class="q-pa-md">
     <q-card class="my-card q-my-md">
       <q-card-section>
-        <div class="text-h6">Your Expenses</div>
-        <div class="text-subtitle2">Balance: {{ transactionsStore.balance }}</div>
+        <div class="text-h6">{{ $t('yourExpenses') }}</div>
+        <div class="text-subtitle2">{{ $t('balance') }}: {{ transactionsStore.balance }}</div>
       </q-card-section>
 
       <q-separator dark />
 
       <q-card-actions>
-        <q-btn>Income: {{ transactionsStore.getIncomes }} $</q-btn>
-        <q-btn>Expenses: {{ transactionsStore.getExpenses }} $</q-btn>
+        <q-btn>{{ $t('income') }}: {{ transactionsStore.getIncomes }} $</q-btn>
+        <q-btn>{{ $t('expenses') }}: {{ transactionsStore.getExpenses }} $</q-btn>
       </q-card-actions>
     </q-card>
 
-    <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id" :filter="filter"
-      no-data-label="No Transactions Found">
+    <q-table :dir="$q.lang.rtl ? 'rtl' : 'ltr'" grid flat bordered :title="$t('transactions')" :rows="rows"
+      :columns="columns" row-key="id" :filter="filter" :no-data-label="$t('noTransactions')">
 
       <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+        <q-input borderless dense debounce="300" v-model="filter" :placeholder="$t('search')">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
-        <q-btn color="primary" icon-right="archive" label="Export to csv" no-caps @click="exportTable" />
+        <q-btn color="primary" icon-right="archive" no-caps @click="exportTable">
+          {{ $t('exportToCSV') }}
+        </q-btn>
       </template>
 
       <template v-slot:item="props">
@@ -143,14 +153,6 @@ function exportTable() {
                 <div class="col">
                   <div class="text-h6">{{ props.row.name }}</div>
                   <div class="text-subtitle2">{{ date.formatDate(props.row.dateAdded, "YYYY-MM-DD") }}</div>
-                  <!-- <q-item-label caption>
-                    <div>
-                      <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in props.row.tags"
-                        :key="tag.id">
-                        <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
-                      </q-badge>
-                    </div>
-                  </q-item-label> -->
                 </div>
                 <div class="col-auto">
                   <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in props.row.tags"
@@ -161,7 +163,7 @@ function exportTable() {
                     <q-menu cover auto-close>
                       <q-list>
                         <q-item clickable :to="{ name: 'transaction-details', params: { id: props.row.id } }">
-                          <q-item-section>Details</q-item-section>
+                          <q-item-section>{{ $t('details') }}</q-item-section>
                         </q-item>
                       </q-list>
                     </q-menu>
@@ -179,83 +181,57 @@ function exportTable() {
             <q-separator />
 
             <q-card-actions>
-              <q-btn flat :to="{ name: 'transaction-details', params: { id: props.row.id } }">Details</q-btn>
-              <q-btn flat @click="confirm(props.row.id)">Delete</q-btn>
+              <q-btn flat :to="{ name: 'transaction-details', params: { id: props.row.id } }">{{ $t('details')
+              }}</q-btn>
+              <q-btn flat @click="confirmDialog = true">{{ $t('delete') }}</q-btn>
             </q-card-actions>
           </q-card>
         </div>
+        <q-dialog v-model="confirmDialog" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <span class="q-ml-sm">{{ $t('confirm') }}</span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+              <q-btn flat :label="$t('cancel')" color="primary" v-close-popup />
+              <q-btn flat :label="$t('delete')" color="red" @click="deleteTransaction(props.row.id)" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </template>
-
-
     </q-table>
 
+
     <!-- <q-list v-if="transactionsStore.transactions.length">
-      <q-item v-for="transaction in transactionsStore.transactions" :key="transaction.id">
-        <q-item-section top class="col-2 gt-sm">
-          <q-item-label class="q-mt-sm">{{ transaction.name }}</q-item-label>
+      <q-item v-for="transaction in transactionsStore.transactions" :key="transaction.id" clickable v-ripple>
+        <q-item-section avatar>
+          <q-badge side clickable rounded color="primary" class="q-mx-xs" v-for="tag in transaction.tags" :key="tag.id">
+            <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
+          </q-badge>
         </q-item-section>
-
-        <q-item-section top>
-
-          <q-item-label lines="1">
-            <span class="text-weight-medium">{{ date.formatDate(transaction.dateAdded, 'DD MMMM YYYY') }}</span>
-          </q-item-label>
-          <q-item-label caption lines="1">
-            <div>
-              <q-badge clickable rounded color="primary" class="q-mx-xs" v-for="tag in transaction.tags" :key="tag.id">
-                <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
-              </q-badge>
-            </div>
-          </q-item-label>
-          <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary">
-            <span class="cursor-pointer">{{ transaction.amount }} $</span>
+        <q-item-section>
+          <q-item-label lines="1">{{ transaction.name }}</q-item-label>
+          <q-item-label caption lines="2">
+            <span class="text-weight-bold">{{ transaction.amount }} $</span>
           </q-item-label>
         </q-item-section>
 
-        <q-item-section top side>
+        <q-item-section side top>
+          {{ date.formatDate(transaction.dateAdded, 'DD MMMM YYYY') }}
+        </q-item-section>
+        <q-item-section side bottom>
           <div class="text-grey-8 q-gutter-xs">
             <q-btn clickable :to="{ name: 'transaction-details', params: { id: transaction.id } }" class="gt-xs"
               size="12px" flat dense round icon="edit" />
             <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="confirm(transaction.id)" />
-
-            <q-btn size="12px" flat dense round icon="more_vert" />
           </div>
         </q-item-section>
       </q-item>
     </q-list>
     <p v-else>
       No Transactions Found. Click on the plus sign to add a new one
-    </p> 
-  -->
-    <!-- <q-table :grid="$q.screen.xs" flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id"
-      :filter="filter">
-      <template v-slot:bottom-left>
-        <p>You have: $ {{ totalAmount }}</p>
-      </template>
-
-<template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-</q-input>
-
-</template>
-</q-table> -->
-
-    <!-- <div>
-      <q-list bordered class="rounded-borders">
-        <q-expansion-item v-for="group in groupedTransactions" expand-separator icon="perm_identity"
-          label="Account settings" caption="John Doe">
-          <q-card v-for="item in group" :key="item.id">
-            <q-card-section>
-              {{ date.formatDate(item.dateAdded, 'DD MMMM YYYY') }}
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
-    </div> -->
-
+    </p> -->
 
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn fab icon="add" color="primary" :to="{ name: 'add-transaction' }">

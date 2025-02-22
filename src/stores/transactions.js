@@ -1,9 +1,7 @@
-import { ref, computed, toRaw } from "vue";
+import { computed } from "vue";
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { nanoid } from "nanoid";
-import { date } from "quasar";
-import moment from "moment";
 
 export const useTransactionsStore = defineStore("transactions", {
   state: () => ({
