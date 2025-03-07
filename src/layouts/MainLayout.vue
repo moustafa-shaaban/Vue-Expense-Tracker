@@ -39,16 +39,12 @@ watch(locale, (newLocale) => {
   localStorage.setItem('locale', newLocale);
   localStorage.getItem('locale')
   $q.lang.set({ rtl: newLocale === 'ar' }); // Enable/disable RTL
+  document.body.classList.toggle('rtl', newLocale === 'ar');
 });
 
 // Compute layout direction based on locale
 const layoutDirection = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'));
 
-watch(locale, (newLocale) => {
-  localStorage.setItem('locale', newLocale);
-  $q.lang.set({ rtl: newLocale === 'ar' }); // Enable/disable RTL
-  document.body.classList.toggle('rtl', newLocale === 'ar'); // Add/remove RTL class
-});
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value

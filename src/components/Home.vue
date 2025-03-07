@@ -8,7 +8,9 @@ import { wrapCsvValue } from '@/utils/utils';
 const transactionsStore = useTransactionsStore();
 
 const $q = useQuasar()
-
+// Initialize dark mode from localStorage
+const rtl = localStorage.getItem('locale') === 'ar';
+console.log(rtl)
 const confirmDialog = ref(false)
 
 function deleteTransaction(id) {
@@ -32,36 +34,6 @@ function deleteTransaction(id) {
     })
   }
 }
-
-function confirm(id) {
-  Dialog.create({
-    dark: true,
-    title: 'confirm',
-    color: 'primary',
-    message: 'confirmMessage',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    try {
-      transactionsStore.deleteTransaction(id);
-      Notify.create({
-        message: 'Transaction Deleted Successfully',
-        type: "positive",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    } catch (error) {
-      Notify.create({
-        message: error.message,
-        type: "negative",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    }
-  })
-};
 
 // let groupedTransactions = transactionsStore.groups;
 
@@ -131,8 +103,8 @@ function exportTable() {
       </q-card-actions>
     </q-card>
 
-    <q-table :dir="$q.lang.rtl ? 'rtl' : 'ltr'" grid flat bordered :title="$t('transactions')" :rows="rows"
-      :columns="columns" row-key="id" :filter="filter" :no-data-label="$t('noTransactions')">
+    <q-table grid flat bordered :title="$t('transactions')" :rows="rows" :columns="columns" row-key="id"
+      :filter="filter" :no-data-label="$t('noTransactions')" :dir="rtl ? rtl : 'ltr'">
 
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" :placeholder="$t('search')">
