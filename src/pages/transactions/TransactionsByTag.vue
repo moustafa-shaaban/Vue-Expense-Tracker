@@ -1,5 +1,5 @@
 <script setup>
-import { useTransactionsStore } from '../stores/transactions';
+import { useTransactionsStore } from '@/stores/transactions';
 import { useRoute } from 'vue-router';
 import { date } from 'quasar';
 
@@ -58,7 +58,7 @@ const transactions = transactionsStore.getTransactionsByTag(route.params.id)
         </div>
 
         <q-page-sticky position="bottom-right" :offset="[18, 18]">
-            <q-btn fab icon="add" color="primary" :to="{ name: 'add-transaction' }">
+            <q-btn fab icon="add" color="primary" :to="{ name: 'create-transaction' }">
             </q-btn>
         </q-page-sticky>
     </q-page>

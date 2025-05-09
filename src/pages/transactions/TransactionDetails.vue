@@ -3,15 +3,11 @@ import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, date, Notify } from 'quasar';
 
-import { useTransactionsStore } from '../stores/transactions';
+import { useTransactionsStore } from '@/stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 const route = useRoute();
 const router = useRouter();
-
-// const transaction = structuredClone(toRaw(
-//     transactionsStore.transactions.find((item) => item.id === route.params.id)
-// ))
 
 const transactionsTags = ref([]);
 
@@ -24,26 +20,13 @@ const testTransaction = ref([]);
 
 testTransaction.value = transaction
 
-
-// console.log(testTransaction)
-// console.log(transaction)
-
 const isEditing = ref(false);
 
-// const transactionEditForm = ref({
-//     id: '',
-//     name: '',
-//     amount: '',
-//     type: '',
-//     dateAdded: '',
-//     tags: [],
-// });
 
 const transactionTags = ref([]);
 
 transactionTags.value = transactionsStore.tags;
 
-// transaction.value = transactionsStore.getTransactionById(route.params.id);
 
 const transactionValue = ref(false)
 
@@ -169,14 +152,6 @@ function confirm(id) {
                             </q-item>
                         </template>
                     </q-select>
-
-                    <!-- <div class="q-my-md"><label class="typo__label"
-                            v-if="transactionsStore.tags.length > 0">Tagging</label>
-                        <multiselect class="q-my-md" v-model="transaction.tags" placeholder="Search" label="name"
-                            track-by="name" :options="transactionTags" :multiple="true" :close-on-select="false"
-                            :clear-on-select="false">
-                        </multiselect>
-                    </div> -->
 
                     <q-separator />
 

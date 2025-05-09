@@ -3,20 +3,13 @@ import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Dialog, Notify } from 'quasar';
 
-import { useTransactionsStore } from '../stores/transactions';
+import { useTransactionsStore } from '@/stores/transactions';
 
 const transactionsStore = useTransactionsStore();
 const route = useRoute();
 const router = useRouter();
 
 const isEditing = ref(false);
-
-// const tag = ref({
-//     id: '',
-//     name: ''
-// });
-
-// tag.value = transactionsStore.getTagById(route.params.id);
 
 const tagItem = ref([])
 
@@ -35,8 +28,6 @@ function handleSubmit() {
                 { icon: 'close', color: 'white', round: true, }
             ]
         })
-
-        // router.push({ name: 'tag-detail', params: { id: route.params.id } })
     } catch (error) {
         Notify.create({
             message: error.message,
