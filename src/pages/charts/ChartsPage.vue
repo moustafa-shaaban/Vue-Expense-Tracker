@@ -1,71 +1,9 @@
-<template>
-    <q-page class="q-pa-md">
-        <q-card class="my-card q-my-md">
-            <q-card-section>
-                <div class="text-h6">Your Expenses</div>
-                <div class="text-subtitle2">Balance: {{ transactionsStore.balance }}</div>
-            </q-card-section>
-
-            <q-separator dark />
-
-            <q-card-actions>
-                <q-btn>Income: {{ transactionsStore.getIncomes }} $</q-btn>
-                <q-btn>Expenses: {{ transactionsStore.getExpenses }} $</q-btn>
-            </q-card-actions>
-        </q-card>
-
-        <q-card class="my-card" flat bordered>
-            <q-card-section>
-                <div class="text-h6">Data Pie Charts</div>
-                <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
-                    in your data</div>
-                <div class="text-subtitle2">Currently it has two sections, Visualizng Incomes and Expenses, and Visualizing
-                    Expenses by tags</div>
-            </q-card-section>
-
-            <q-tabs v-model="tab" class="text-teal">
-                <q-tab label="Expenses By Tags" name="one" />
-                <q-tab label="Expenses and Incomes" name="two" />
-            </q-tabs>
-
-            <q-separator />
-
-            <q-tab-panels v-model="tab" animated>
-                <q-tab-panel name="one">
-                    <div v-if="expenses.length > 0">
-                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
-                        <Pie :data="expensesChartData" :options="options" />
-                    </div>
-                    <div v-else>
-                        <p>No Expenses Found</p>
-                    </div>
-                </q-tab-panel>
-
-                <q-tab-panel name="two">
-                    <div v-if="transactionsStore.transactions.length > 0">
-                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
-                        <Pie :data="expensesAndIncomesData" :options="options" />
-                    </div>
-                    <div v-else>
-                        <p>No Transactions Found</p>
-                    </div>
-                </q-tab-panel>
-            </q-tab-panels>
-        </q-card>
-
-        <q-page-sticky position="bottom-right" :offset="[18, 18]">
-            <q-btn fab icon="add" color="primary" :to="{ name: 'create-transaction' }">
-            </q-btn>
-        </q-page-sticky>
-
-    </q-page>
-</template>
-
 <script setup>
 import { ref, watch } from 'vue'
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
+import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from "@/stores/transactions";
 
 ChartJS.register(ArcElement, Tooltip, Legend)
@@ -123,6 +61,56 @@ const options = {
 }
 
 </script>
+
+<template>
+    <q-page class="q-pa-md">
+        <BalanceSummary />
+        <q-card class="my-card" flat bordered>
+            <q-card-section>
+                <div class="text-h6">Data Pie Charts</div>
+                <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
+                    in your data</div>
+                <div class="text-subtitle2">Currently it has two sections, Visualizng Incomes and Expenses, and Visualizing
+                    Expenses by tags</div>
+            </q-card-section>
+
+            <q-tabs v-model="tab" class="text-teal">
+                <q-tab label="Expenses By Tags" name="one" />
+                <q-tab label="Expenses and Incomes" name="two" />
+            </q-tabs>
+
+            <q-separator />
+
+            <q-tab-panels v-model="tab" animated>
+                <q-tab-panel name="one">
+                    <div v-if="expenses.length > 0">
+                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
+                        <Pie :data="expensesChartData" :options="options" />
+                    </div>
+                    <div v-else>
+                        <p>No Expenses Found</p>
+                    </div>
+                </q-tab-panel>
+
+                <q-tab-panel name="two">
+                    <div v-if="transactionsStore.transactions.length > 0">
+                        <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
+                        <Pie :data="expensesAndIncomesData" :options="options" />
+                    </div>
+                    <div v-else>
+                        <p>No Transactions Found</p>
+                    </div>
+                </q-tab-panel>
+            </q-tab-panels>
+        </q-card>
+
+        <q-page-sticky position="bottom-right" :offset="[18, 18]">
+            <q-btn fab icon="add" color="primary" :to="{ name: 'create-transaction' }">
+            </q-btn>
+        </q-page-sticky>
+
+    </q-page>
+</template>
 
 <style lang="sass" scoped>
 .my-card

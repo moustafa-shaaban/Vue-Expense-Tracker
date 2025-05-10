@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
 
+import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from '@/stores/transactions';
 
 const transactionsStore = useTransactionsStore();
@@ -59,17 +60,9 @@ const rows = transactions
 
 <template>
   <q-page class="q-pa-md">
-    <q-card class="my-card q-my-md">
-      <q-card-section>
-        <div class="text-h6">Your Expenses</div>
-        <div class="text-subtitle2">Balance: {{ transactionsStore.balance }}</div>
-      </q-card-section>
-      <q-separator dark />
-      <q-card-actions>
-        <q-btn>Income: {{ transactionsStore.getIncomes }} $</q-btn>
-        <q-btn>Expenses: {{ transactionsStore.getExpenses }} $</q-btn>
-      </q-card-actions>
-    </q-card>
+    
+    <BalanceSummary />
+
     <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id" :filter="filter"
       no-data-label="No Transactions Found">
 

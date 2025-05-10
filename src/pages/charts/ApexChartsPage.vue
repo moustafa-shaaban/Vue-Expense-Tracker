@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useTransactionsStore } from "@/stores/transactions";
 
+import BalanceSummary from "@/components/BalanceSummary.vue";
 const transactionsStore = useTransactionsStore();
 
 let expensesMap = new Map();
@@ -9,8 +10,6 @@ let expensesMap = new Map();
 const expenses = computed(() => {
     return transactionsStore.transactions.filter((transaction) => transaction.type === 'Expense')
 })
-
-console.log(expenses.value)
 
 // let expenses = transactionsStore.$state.transactions.filter((transaction) => transaction.type === 'Expense')
 
@@ -62,6 +61,7 @@ const chartOptions = {
 
 <template>
     <q-page class="q-pa-md">
+        <BalanceSummary />
         <q-pull-to-refresh @refresh="refreshPage">
             <apexchart width="500" type="pie" :options="chartOptions" :series="series"></apexchart>
         </q-pull-to-refresh>
