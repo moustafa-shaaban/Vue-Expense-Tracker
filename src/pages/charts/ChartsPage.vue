@@ -1,10 +1,12 @@
 <script setup>
 import { ref, watch } from 'vue'
-
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from "@/stores/transactions";
+import { colors } from 'quasar'
+
+const { getPaletteColor } = colors
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -15,42 +17,27 @@ const transactionsTags = ref([]);
 
 transactionsTags.value = transactionsStore.tags;
 
-const expensesAndIncomesData = {
-    labels: ['Incomes', 'Expenses'],
-    datasets: [
-        {
-            backgroundColor: ['Blue', 'Red'],
-            data: [transactionsStore.getIncomes.value, transactionsStore.getExpenses.value],
-        }
-    ]
-}
-
-
-// Source: https://youtu.be/hqTQ4Dlswco
-let expensesMap = new Map();
 
 let expenses = transactionsStore.$state.transactions.filter((transaction) => transaction.type === 'Expense')
 
-
-expenses.forEach(function (expense) {
-
-    expense.tags.forEach(function (tag) {
-        if (expensesMap.has(tag.name)) {
-            const oldAmount = expensesMap.get(tag.name);
-            expensesMap.set(tag.name, oldAmount + expense.amount);
-        } else {
-            expensesMap.set(tag.name, expense.amount);
+const expensesByTag = transactionsStore.getExpensesList.reduce((acc, expense) => {
+    expense.tags.forEach(tag => {
+        if (!acc[tag.name]) {
+            acc[tag.name] = { amount: 0, color: getPaletteColor(tag.color), name: tag.name };
         }
+        acc[tag.name].amount += expense.amount;
     })
-})
-
+    return acc;
+}, {});
 
 const expensesChartData = {
-    labels: Array.from(expensesMap.keys()),
+    labels: Object.values(expensesByTag).map(expense => expense.name),
     datasets: [
         {
-            data: Array.from(expensesMap.values()),
-            backgroundColor: ['Blue', 'Red'],
+            data: Object.values(expensesByTag).map(expense => expense.amount),
+            backgroundColor: Object.values(expensesByTag).map(expense => expense.color),
+            borderColor: Object.values(expensesByTag).map(expense => expense.color),
+            borderWidth: 1
         }
     ]
 }
@@ -58,6 +45,16 @@ const expensesChartData = {
 const options = {
     responsive: true,
     maintainAspectRatio: false
+}
+
+const expensesAndIncomesData = {
+    labels: ['Incomes', 'Expenses'],
+    datasets: [
+        {
+            backgroundColor: [getPaletteColor('positive'), 'Red'],
+            data: [transactionsStore.getIncomes.value, transactionsStore.getExpenses.value],
+        }
+    ]
 }
 
 </script>

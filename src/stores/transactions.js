@@ -51,6 +51,14 @@ export const useTransactionsStore = defineStore('transactions', {
       return incomesValue
     },
 
+    getIncomesList: (state) => {
+      return state.transactions.filter((transaction) => transaction.type === 'Income')
+    },
+
+    getExpensesList: (state) => {
+      return state.transactions.filter((transaction) => transaction.type === 'Expense')
+    },
+
     getTransactionById: (state) => {
       return (id) => state.transactions.find((transaction) => transaction.id === id)
     },
