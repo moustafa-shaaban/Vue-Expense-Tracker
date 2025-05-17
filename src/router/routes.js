@@ -10,6 +10,11 @@ const routes = [
           component: () => import('@/pages/AboutView.vue'),
         },
         {
+          path: '/test',
+          name: 'test',
+          component: () => import('@/pages/TestPage.vue'),
+        },
+        {
           name: 'create',
           path: 'transaction/create',
           component: () => import('@/pages/transactions/TransactionForm.vue'),

@@ -4,6 +4,7 @@ import { date, Dialog, Notify } from 'quasar'
 
 import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from '@/stores/transactions';
+import { storeToRefs } from 'pinia';
 
 const transactionsStore = useTransactionsStore();
 
@@ -51,21 +52,60 @@ const columns = ref([
   { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
   { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
 ])
-const transactions = computed(() => {
-  return transactionsStore.transactions
+
+// const transactions = computed(() => {
+//   return transactionsStore.transactions
+// })
+
+const { transactions, getExpensesList, getIncomesList, tags, getExpensesTags, getIncomesTags } = storeToRefs(transactionsStore);
+
+const selectedType = ref('all')
+const selectedTag = ref(tags.value);
+const tagItem = ref([])
+
+const typeOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Expenses', value: 'expenses' },
+  { label: 'Incomes', value: 'incomes' },
+]
+
+const filteredRows = computed(() => {
+  if (selectedType.value === 'incomes') {
+    selectedTag.value = getIncomesTags.value
+    return getIncomesList.value
+  } else if (selectedType.value === 'expenses') {
+    selectedTag.value = getExpensesTags.value
+    return getExpensesList.value
+  } else {
+    selectedTag.value = tags.value
+    return transactions.value
+
+  }
 })
 
-
-const rows = transactions
 </script>
 
 <template>
   <q-page class="q-pa-md">
-    
-    <BalanceSummary />
 
-    <q-table grid flat bordered title="Transactions" :rows="rows" :columns="columns" row-key="id" :filter="filter"
-      no-data-label="No Transactions Found">
+    <BalanceSummary />
+    <div class=" col-lg-3 ">
+      <q-select v-model="selectedType" :options="typeOptions" label="Filter Transactions By Type" emit-value map-options
+        class="q-mb-md" />
+      <!-- <q-select class="q-my-md" filled dense options-dense label="Tags" counter v-model="tagItem" :options="selectedTag"
+        option-value="id" option-label="name" multiple use-chips map-options clearable>
+
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              No results
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select> -->
+    </div>
+    <q-table grid flat bordered title="Transactions" :rows="filteredRows" :columns="columns" row-key="id"
+      :filter="filter" no-data-label="No Transactions Found">
 
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
