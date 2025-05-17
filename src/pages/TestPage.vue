@@ -1,88 +1,178 @@
+<script setup>
+import { ref, computed } from 'vue';
+import { date, Dialog, Notify } from 'quasar'
+
+import BalanceSummary from "@/components/BalanceSummary.vue";
+import { useTransactionsStore } from '@/stores/transactions';
+import { storeToRefs } from 'pinia';
+
+const transactionsStore = useTransactionsStore();
+
+function confirm(id) {
+  Dialog.create({
+    dark: true,
+    title: 'Confirm',
+    color: 'primary',
+    message: 'Are you sure you want to delete this transaction?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    try {
+      transactionsStore.deleteTransaction(id);
+      Notify.create({
+        message: 'Transaction Deleted Successfully',
+        type: "positive",
+        actions: [
+          { icon: 'close', color: 'white', round: true, }
+        ]
+      })
+    } catch (error) {
+      Notify.create({
+        message: error.message,
+        type: "negative",
+        actions: [
+          { icon: 'close', color: 'white', round: true, }
+        ]
+      })
+    }
+  })
+};
+
+const filter = ref('');
+const columns = ref([
+  {
+    name: 'name',
+    label: "Name",
+    required: true,
+    align: 'left',
+    field: row => row.name,
+    format: val => `${val}`,
+    sortable: true
+  },
+  { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
+  { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
+])
+
+// const transactions = computed(() => {
+//   return transactionsStore.transactions
+// })
+
+const { transactions, getExpensesList, getIncomesList, tags, getExpensesTags, getIncomesTags } = storeToRefs(transactionsStore);
+
+const selectedType = ref('all')
+
+const typeOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Expenses', value: 'expenses' },
+  { label: 'Incomes', value: 'incomes' },
+]
+
+
+const selectedTags = ref([]);
+
+// Compute tag options dynamically
+const tagOptions = computed(() => {
+  const tags = new Set();
+  transactions.value.forEach(t => t.tags.forEach(tag => tags.add(tag.name)));
+  return Array.from(tags);
+});
+
+// Compute filtered transactions
+const filteredTransactions = computed(() => {
+  if (!selectedTags.value || selectedTags.value.length === 0) {
+    return transactions.value;
+  }
+  return transactions.value.filter(transaction =>
+    transaction.tags.some(tag =>
+      selectedTags.value.includes(tag.name)
+    )
+  );
+});
+
+</script>
+
 <template>
-  <div class="q-pa-md">
-    <div class="row q-mb-md">
-      <div class="col-4">
-        <q-select
-          v-model="selectedCategory"
-          :options="categoryOptions"
-          label="Select Category"
-          clearable
-          filled
-          @update:model-value="updateFilter"
-        />
-      </div>
-      <div class="col-4">
-        <q-input
-          v-model="searchText"
-          label="Search by Name"
-          filled
-          debounce="300"
-          @update:model-value="updateFilter"
-        >
+  <q-page class="q-pa-md">
+
+    <BalanceSummary />
+    <div class=" col-lg-3 ">
+      <q-select v-model="selectedType" :options="typeOptions" label="Filter Transactions By Type" emit-value map-options
+        class="q-mb-md" />
+      <q-select
+      v-model="selectedTags"
+      :options="tagOptions"
+      label="Filter by Tags"
+      multiple
+      clearable
+    />
+    </div>
+    <q-table grid flat bordered title="Transactions" :rows="filteredTransactions" :columns="columns" row-key="id"
+      :filter="filter" no-data-label="No Transactions Found">
+
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
-      </div>
-    </div>
+      </template>
 
-    <q-table
-      title="Desserts"
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-      :filter="filter"
-      :filter-method="filterMethod"
-    />
-  </div>
+      <template v-slot:item="props">
+        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+          <q-card>
+            <q-card-section>
+              <div class="row items-center no-wrap">
+                <div class="col">
+                  <div class="text-h6">{{ props.row.name }}</div>
+                  <div class="text-subtitle2">{{ date.formatDate(props.row.date, "YYYY-MM-DD") }}</div>
+                </div>
+                <div class="col-auto">
+                  <q-badge side clickable rounded class="q-mx-xs" v-for="tag in props.row.tags" :key="tag.id"
+                    :color="tag.color">
+                    <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
+                  </q-badge>
+                  <q-btn color="grey-7" round flat icon="more_vert">
+                    <q-menu cover auto-close>
+                      <q-list>
+                        <q-item clickable :to="{ name: 'transaction-details', params: { id: props.row.id } }">
+                          <q-item-section>Details</q-item-section>
+                        </q-item>
+                        <q-item clickable :to="{ name: 'update', params: { id: props.row.id } }">
+                          <q-item-section>Update</q-item-section>
+                        </q-item>
+                        <q-item clickable :to="{ name: 'clone', params: { id: props.row.id } }">
+                          <q-item-section>Clone</q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                </div>
+              </div>
+            </q-card-section>
+            <q-separator />
+            <q-card-section>
+              {{ props.row.amount }} $
+            </q-card-section>
+            <q-separator />
+            <q-card-actions>
+              <q-btn flat :to="{ name: 'transaction-details', params: { id: props.row.id } }">Details</q-btn>
+              <q-btn size="sm" :to="{ name: 'update', params: { id: props.row.id } }" round icon="edit"
+                color="primary" />
+              <q-btn size="sm" @click="confirm(props.row.id)" round icon="delete" color="negative" />
+            </q-card-actions>
+          </q-card>
+        </div>
+      </template>
+    </q-table>
+
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="add" color="primary" :to="{ name: 'create' }">
+      </q-btn>
+    </q-page-sticky>
+  </q-page>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-
-const rows = ref([
-  { name: 'Frozen Yogurt', category: 'breakfast', calories: 159 },
-  { name: 'Ice Cream Sandwich', category: 'breakfast', calories: 237 },
-  { name: 'Eclair', category: 'lunch', calories: 262 },
-  { name: 'Cupcake', category: 'lunch', calories: 305 },
-  { name: 'Gingerbread', category: 'dinner', calories: 356 },
-  { name: 'Jelly Bean', category: 'dinner', calories: 375 },
-]);
-
-const columns = [
-  { name: 'name', label: 'Dessert', field: 'name', sortable: true },
-  { name: 'category', label: 'Category', field: 'category', sortable: true },
-  { name: 'calories', label: 'Calories', field: 'calories', sortable: true },
-];
-
-const categoryOptions = ['breakfast', 'lunch', 'dinner'];
-const selectedCategory = ref(null);
-const searchText = ref('');
-const filter = ref({ category: '', search: '' });
-
-const updateFilter = () => {
-  filter.value = {
-    category: selectedCategory.value || '',
-    search: searchText.value || '',
-  };
-};
-
-const filterMethod = (rows, terms) => {
-  let filteredRows = rows;
-
-  // Filter by category
-  if (terms.category) {
-    filteredRows = filteredRows.filter((row) => row.category === terms.category);
-  }
-
-  // Filter by search text
-  if (terms.search) {
-    const needle = terms.search.toLowerCase();
-    filteredRows = filteredRows.filter((row) =>
-      row.name.toLowerCase().includes(needle)
-    );
-  }
-
-  return filteredRows;
-};
-</script>
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+</style>

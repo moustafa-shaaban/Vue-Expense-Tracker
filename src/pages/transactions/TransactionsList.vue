@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
 
 import BalanceSummary from "@/components/BalanceSummary.vue";
@@ -62,12 +62,28 @@ const { transactions, getExpensesList, getIncomesList, tags, getExpensesTags, ge
 const selectedType = ref('all')
 const selectedTag = ref(tags.value);
 const tagItem = ref([])
+const selectedTags = ref([])
 
 const typeOptions = [
   { label: 'All', value: 'all' },
   { label: 'Expenses', value: 'expenses' },
   { label: 'Incomes', value: 'incomes' },
 ]
+
+// Compute tag options dynamically
+const tagOptions = computed(() => {
+  return selectedTag.value.map(tag => ({
+    name: tag.name,
+    value: tag.id,
+    color: tag.color
+  }))
+  // const tags = new Set();
+  // selectedTag.value.forEach(tag => tags.add(tag.name))
+  // selectedTag.value.forEach(tag => tags.add(tag.name))
+  // console.log(tags)
+  // //transactions.value.forEach(t => t.tags.forEach(tag => tags.add(tag.name)));
+  // return Array.from(tags);
+});
 
 const filteredRows = computed(() => {
   if (selectedType.value === 'incomes') {
@@ -76,13 +92,54 @@ const filteredRows = computed(() => {
   } else if (selectedType.value === 'expenses') {
     selectedTag.value = getExpensesTags.value
     return getExpensesList.value
+  } else if (selectedTags.value.length > 0) {
+    return transactions.value.filter(transaction =>
+      transaction.tags.some(tag =>
+        selectedTags.value.includes(tag.id)
+      )
+    )
   } else {
     selectedTag.value = tags.value
     return transactions.value
-
   }
 })
 
+// Group items by week, month, year, or custom period
+/* const groupedItems = computed(() => {
+  if (!groupBy.value) return null;
+
+  const grouped = {};
+  items.forEach((item) => {
+    const date = new Date(item.dateAdded);
+    let key;
+
+    if (groupBy.value === 'week') {
+      const weekStart = new Date(date);
+      weekStart.setDate(date.getDate() - date.getDay()); // Start of the week (Sunday)
+      key = `Week of ${weekStart.toLocaleDateString()}`;
+    } else if (groupBy.value === 'month') {
+      key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    } else if (groupBy.value === 'year') {
+      key = date.getFullYear().toString();
+    } else if (groupBy.value === 'custom') {
+      if (!customDateRange.value.from || !customDateRange.value.to) return null;
+      const fromDate = new Date(customDateRange.value.from);
+      const toDate = new Date(customDateRange.value.to);
+      if (date >= fromDate && date <= toDate) {
+        key = `Custom Period: ${fromDate.toLocaleDateString()} - ${toDate.toLocaleDateString()}`;
+      } else {
+        return; // Skip items outside the custom range
+      }
+    }
+
+    if (!grouped[key]) {
+      grouped[key] = [];
+    }
+    grouped[key].push(item);
+  });
+
+  return grouped;
+}); */
 </script>
 
 <template>
@@ -90,8 +147,38 @@ const filteredRows = computed(() => {
 
     <BalanceSummary />
     <div class=" col-lg-3 ">
-      <q-select v-model="selectedType" :options="typeOptions" label="Filter Transactions By Type" emit-value map-options
-        class="q-mb-md" />
+      <q-card>
+        <q-card-section>
+          <div class="row q-col-gutter-md">
+            <!-- Type Selector -->
+            <div class="col-12 col-sm-4">
+              <q-select v-model="selectedType" :options="typeOptions" label="Filter Transactions By Type" emit-value map-options class="q-mb-md" />
+            </div>
+            <!-- Tag Selector -->
+            <div class="col-12 col-sm-4">
+              <q-select v-model="selectedTags" :options="tagOptions" label="Filter Transactions By Tags" outlined
+                multiple emit-value map-options use-chips>
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section avatar>
+                      <q-icon name="circle" :color="scope.opt.color" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:selected-item="scope">
+                  <q-chip removable dense @remove="scope.removeAtIndex(scope.index)" :tabindex="scope.tabindex"
+                    :color="scope.opt.color" text-color="white" class="q-ma-none">
+                    {{ scope.opt.name }}
+                  </q-chip>
+                </template>
+              </q-select>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
       <!-- <q-select class="q-my-md" filled dense options-dense label="Tags" counter v-model="tagItem" :options="selectedTag"
         option-value="id" option-label="name" multiple use-chips map-options clearable>
 
