@@ -124,6 +124,26 @@ function toggleLeftDrawer() {
             </q-item-section>
           </q-item>
 
+          <q-item exact clickable v-ripple to="/import">
+            <q-item-section avatar>
+              <q-icon name="menu" />
+            </q-item-section>
+
+            <q-item-section>
+              Data Import
+            </q-item-section>
+          </q-item>
+
+          <q-item exact clickable v-ripple to="/export">
+            <q-item-section avatar>
+              <q-icon name="menu" />
+            </q-item-section>
+
+            <q-item-section>
+              Data Export
+            </q-item-section>
+          </q-item>
+
           <q-item v-if="!Dark.isActive" clickable v-ripple @click="toggleDarkMode">
             <q-item-section avatar>
               <q-icon name="dark_mode" />

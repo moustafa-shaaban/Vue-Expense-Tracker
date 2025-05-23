@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
-import { uid } from 'quasar'
+import { uid, date } from 'quasar'
 
 export const useTransactionsStore = defineStore('transactions', {
   state: () => ({
@@ -11,10 +11,10 @@ export const useTransactionsStore = defineStore('transactions', {
       { id: uid(), name: 'Gift', type: 'income', color: 'teal-6' },
       { id: uid(), name: 'Freelance', type: 'income', color: 'purple-4' },
       { id: uid(), name: 'Food', type: 'expense', color: 'red-14' },
-      { id: uid(), name: 'Commute', type: 'expense', color: '#pink-7' },
+      { id: uid(), name: 'Commute', type: 'expense', color: 'pink-7' },
       { id: uid(), name: 'Rent', type: 'expense', color: 'red-3' },
     ]),
-
+    groupBy: useStorage('groupByOption', 'month'),
     totalAmount: useStorage('totalAmount', 0),
   }),
 
@@ -97,6 +97,9 @@ export const useTransactionsStore = defineStore('transactions', {
   },
 
   actions: {
+    setGroupBy(value) {
+      this.groupBy = value
+    },
     addTransaction(transaction) {
       const newTransaction = {
         id: uid(),
@@ -104,7 +107,7 @@ export const useTransactionsStore = defineStore('transactions', {
         amount: transaction.amount,
         type: transaction.type,
         tags: transaction.tags,
-        date: transaction.date || Date.now(),
+        date: transaction.date || date.formatDate(new Date(), 'YYYY/MM/DD'),
       }
       this.transactions.unshift(newTransaction)
     },

@@ -1,178 +1,353 @@
-<script setup>
-import { ref, computed } from 'vue';
-import { date, Dialog, Notify } from 'quasar'
-
-import BalanceSummary from "@/components/BalanceSummary.vue";
-import { useTransactionsStore } from '@/stores/transactions';
-import { storeToRefs } from 'pinia';
-
-const transactionsStore = useTransactionsStore();
-
-function confirm(id) {
-  Dialog.create({
-    dark: true,
-    title: 'Confirm',
-    color: 'primary',
-    message: 'Are you sure you want to delete this transaction?',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    try {
-      transactionsStore.deleteTransaction(id);
-      Notify.create({
-        message: 'Transaction Deleted Successfully',
-        type: "positive",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    } catch (error) {
-      Notify.create({
-        message: error.message,
-        type: "negative",
-        actions: [
-          { icon: 'close', color: 'white', round: true, }
-        ]
-      })
-    }
-  })
-};
-
-const filter = ref('');
-const columns = ref([
-  {
-    name: 'name',
-    label: "Name",
-    required: true,
-    align: 'left',
-    field: row => row.name,
-    format: val => `${val}`,
-    sortable: true
-  },
-  { name: 'Date', label: 'Date', field: row => date.formatDate(row.dateAdded, 'DD MMMM YYYY'), sortable: true },
-  { name: 'Amount', label: 'Amount', field: row => row.amount, sortable: true },
-])
-
-// const transactions = computed(() => {
-//   return transactionsStore.transactions
-// })
-
-const { transactions, getExpensesList, getIncomesList, tags, getExpensesTags, getIncomesTags } = storeToRefs(transactionsStore);
-
-const selectedType = ref('all')
-
-const typeOptions = [
-  { label: 'All', value: 'all' },
-  { label: 'Expenses', value: 'expenses' },
-  { label: 'Incomes', value: 'incomes' },
-]
-
-
-const selectedTags = ref([]);
-
-// Compute tag options dynamically
-const tagOptions = computed(() => {
-  const tags = new Set();
-  transactions.value.forEach(t => t.tags.forEach(tag => tags.add(tag.name)));
-  return Array.from(tags);
-});
-
-// Compute filtered transactions
-const filteredTransactions = computed(() => {
-  if (!selectedTags.value || selectedTags.value.length === 0) {
-    return transactions.value;
-  }
-  return transactions.value.filter(transaction =>
-    transaction.tags.some(tag =>
-      selectedTags.value.includes(tag.name)
-    )
-  );
-});
-
-</script>
-
 <template>
-  <q-page class="q-pa-md">
-
-    <BalanceSummary />
-    <div class=" col-lg-3 ">
-      <q-select v-model="selectedType" :options="typeOptions" label="Filter Transactions By Type" emit-value map-options
-        class="q-mb-md" />
-      <q-select
-      v-model="selectedTags"
-      :options="tagOptions"
-      label="Filter by Tags"
-      multiple
-      clearable
+  <div class="q-pa-md">
+    <!-- Grouping Selection -->
+    <q-select
+      v-model="groupBy"
+      :options="groupByOptions"
+      label="Group By"
+      style="max-width: 200px; margin-bottom: 10px;"
+      @update:model-value="updateTableData"
     />
+
+    <!-- Custom Date Range Input (shown only when custom is selected) -->
+    <div v-if="groupBy === 'custom'" class="q-mb-md">
+      <q-input
+        v-model="customStartDate"
+        label="Start Date (YYYY-MM-DD)"
+        filled
+        style="max-width: 200px; display: inline-block; margin-right: 10px;"
+      />
+      <q-input
+        v-model="customEndDate"
+        label="End Date (YYYY-MM-DD)"
+        filled
+        style="max-width: 200px; display: inline-block;"
+      />
+      <q-btn
+        label="Apply Range"
+        color="primary"
+        @click="updateTableData"
+        class="q-ml-sm"
+      />
     </div>
-    <q-table grid flat bordered title="Transactions" :rows="filteredTransactions" :columns="columns" row-key="id"
-      :filter="filter" no-data-label="No Transactions Found">
 
-      <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </template>
-
-      <template v-slot:item="props">
-        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
-          <q-card>
-            <q-card-section>
-              <div class="row items-center no-wrap">
-                <div class="col">
-                  <div class="text-h6">{{ props.row.name }}</div>
-                  <div class="text-subtitle2">{{ date.formatDate(props.row.date, "YYYY-MM-DD") }}</div>
-                </div>
-                <div class="col-auto">
-                  <q-badge side clickable rounded class="q-mx-xs" v-for="tag in props.row.tags" :key="tag.id"
-                    :color="tag.color">
-                    <q-breadcrumbs-el :label="tag.name" :to="{ name: 'tag-details', params: { id: tag.id } }" />
-                  </q-badge>
-                  <q-btn color="grey-7" round flat icon="more_vert">
-                    <q-menu cover auto-close>
-                      <q-list>
-                        <q-item clickable :to="{ name: 'transaction-details', params: { id: props.row.id } }">
-                          <q-item-section>Details</q-item-section>
-                        </q-item>
-                        <q-item clickable :to="{ name: 'update', params: { id: props.row.id } }">
-                          <q-item-section>Update</q-item-section>
-                        </q-item>
-                        <q-item clickable :to="{ name: 'clone', params: { id: props.row.id } }">
-                          <q-item-section>Clone</q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-menu>
-                  </q-btn>
-                </div>
-              </div>
-            </q-card-section>
-            <q-separator />
-            <q-card-section>
-              {{ props.row.amount }} $
-            </q-card-section>
-            <q-separator />
-            <q-card-actions>
-              <q-btn flat :to="{ name: 'transaction-details', params: { id: props.row.id } }">Details</q-btn>
-              <q-btn size="sm" :to="{ name: 'update', params: { id: props.row.id } }" round icon="edit"
-                color="primary" />
-              <q-btn size="sm" @click="confirm(props.row.id)" round icon="delete" color="negative" />
-            </q-card-actions>
-          </q-card>
-        </div>
+    <!-- Quasar Table -->
+    <q-table
+      title="Financial Transactions"
+      :rows="groupedData"
+      :columns="columns"
+      row-key="groupKey"
+      :pagination="pagination"
+      dense
+    >
+      <!-- Custom body slot with QExpansionItem -->
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td key="groupKey" :props="props">
+            <q-expansion-item
+              :label="props.row.groupKey"
+              dense
+              expand-icon="expand_more"
+            >
+              <!-- Expanded content: Summary and Transactions -->
+              <q-card flat>
+                <q-card-section>
+                  <!-- Summary Section -->
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label>
+                        <strong>Summary for {{ props.row.groupKey }}</strong>
+                      </q-item-label>
+                      <q-item-label caption>
+                        Number of Transactions: {{ props.row.transactionCount }}
+                      </q-item-label>
+                      <q-item-label caption>
+                        Total Income: 
+                        <span class="text-positive">
+                          {{ formatAmount(props.row.totalIncome) }}
+                        </span>
+                      </q-item-label>
+                      <q-item-label caption>
+                        Total Expenses: 
+                        <span class="text-negative">
+                          {{ formatAmount(props.row.totalExpenses) }}
+                        </span>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator />
+                  <!-- Transactions List -->
+                  <q-list dense>
+                    <q-item v-for="(transaction, index) in props.row.transactions" :key="index">
+                      <q-item-section>
+                        <q-item-label>{{ transaction.date }}</q-item-label>
+                        <q-item-label caption>
+                          {{ transaction.name }} ({{ transaction.type }}): 
+                          <span :class="transaction.amount < 0 ? 'text-negative' : 'text-positive'">
+                            {{ formatAmount(transaction.amount) }}
+                          </span>
+                        </q-item-label>
+                        <q-item-label caption>
+                          Tags: 
+                          <q-chip
+                            v-for="tag in transaction.tags"
+                            :key="tag.name"
+                            :color="tag.color"
+                            text-color="white"
+                            dense
+                          >
+                            {{ tag.name }}
+                          </q-chip>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </q-td>
+          <q-td key="type" :props="props">{{ props.row.type }}</q-td>
+          <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+          <q-td key="amount" :props="props">
+            <span :class="props.row.amount < 0 ? 'text-negative' : 'text-positive'">
+              {{ formatAmount(props.row.amount) }}
+            </span>
+          </q-td>
+          <q-td key="tags" :props="props">
+            <q-chip v-for="tag in props.row.tags" :key="tag.name" :color="tag.color" text-color="white" dense>
+              {{ tag.name }}
+            </q-chip>
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
 
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add" color="primary" :to="{ name: 'create' }">
-      </q-btn>
-    </q-page-sticky>
-  </q-page>
+    <!-- Export Buttons -->
+    <div class="q-mt-md">
+      <q-btn label="Export to CSV" color="primary" @click="exportToCSV" class="q-mr-sm" />
+      <q-btn label="Export to JSON" color="secondary" @click="exportToJSON" />
+    </div>
+  </div>
 </template>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-</style>
+<script>
+import { ref, computed } from 'vue';
+import { exportFile } from 'quasar';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
+import { useTransactionsStore } from '@/stores/transactions';
+import { storeToRefs } from 'pinia';
+
+export default {
+  name: 'FinancialTable',
+  setup() {
+    const transactionsStore = useTransactionsStore();
+    const { transactions } = storeToRefs(transactionsStore)
+    // Original data
+    const rawData = ref([
+      {
+        name: 'Rent',
+        amount: -300,
+        type: 'Expense',
+        tags: [{ name: 'Rent', type: 'expense', color: 'red-3' }],
+        date: '2025/05/08',
+      },
+      {
+        name: 'Rent',
+        amount: -300,
+        type: 'Expense',
+        tags: [{ name: 'Rent', type: 'expense', color: 'red-3' }],
+        date: '2024/05/09',
+      },
+      {
+        name: 'Freelance Job',
+        amount: 500,
+        type: 'Income',
+        tags: [{ name: 'Freelance', type: 'income', color: 'purple-4' }],
+        date: '2025/05/15',
+      },
+      {
+        name: 'Salary',
+        amount: 1000,
+        type: 'Income',
+        tags: [{ name: 'Salary', type: 'income', color: 'indigo' }],
+        date: '2025/05/01',
+      },
+      {
+        name: 'Salary',
+        amount: 1000,
+        type: 'Income',
+        tags: [{ name: 'Salary', type: 'income', color: 'indigo' }],
+        date: '2025/04/01',
+      },
+      {
+        name: 'Salary',
+        amount: 1000,
+        type: 'Income',
+        tags: [{ name: 'Salary', type: 'income', color: 'indigo' }],
+        date: '2024/05/01',
+      },
+    ]);
+
+    // Grouping options
+    const groupBy = ref('month');
+    const groupByOptions = ['day', 'week', 'month', 'year', 'custom'];
+    const customStartDate = ref('');
+    const customEndDate = ref('');
+
+    // Table columns
+    const columns = [
+      { name: 'groupKey', label: 'Date/Group', field: 'groupKey', align: 'left' },
+      { name: 'type', label: 'Type', field: 'type', align: 'left' },
+      { name: 'name', label: 'Name', field: 'name', align: 'left' },
+      { name: 'amount', label: 'Amount', field: 'amount', align: 'right' },
+      { name: 'tags', label: 'Tags', field: 'tags', align: 'left' },
+    ];
+
+    // Pagination settings
+    const pagination = ref({
+      rowsPerPage: 10,
+      page: 1,
+    });
+
+    // Computed property for grouped data
+    const groupedData = computed(() => {
+      const grouped = {};
+
+      transactions.value.forEach((item) => {
+        const date = new Date(item.date);
+        let groupKey;
+
+        // Determine group key based on groupBy selection
+        if (groupBy.value === 'day') {
+          groupKey = format(date, 'yyyy-MM-dd');
+        } else if (groupBy.value === 'week') {
+          const weekStart = format(startOfWeek(date, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+          groupKey = `Week of ${weekStart}`;
+        } else if (groupBy.value === 'month') {
+          groupKey = format(date, 'yyyy-MM');
+        } else if (groupBy.value === 'year') {
+          groupKey = format(date, 'yyyy');
+        } else if (groupBy.value === 'custom') {
+          const start = new Date(customStartDate.value);
+          const end = new Date(customEndDate.value);
+          if (!customStartDate.value || !customEndDate.value || isNaN(start) || isNaN(end)) {
+            groupKey = 'Invalid Range';
+          } else if (date >= start && date <= end) {
+            groupKey = `${format(start, 'yyyy-MM-dd')} to ${format(end, 'yyyy-MM-dd')}`;
+          } else {
+            return; // Skip items outside custom range
+          }
+        }
+
+        if (!grouped[groupKey]) {
+          grouped[groupKey] = {
+            groupKey,
+            type: item.type,
+            name: item.name,
+            amount: item.amount,
+            tags: [...item.tags],
+            transactions: [item], // Store individual transactions
+            transactionCount: 1,
+            totalIncome: item.amount > 0 ? item.amount : 0,
+            totalExpenses: item.amount < 0 ? Math.abs(item.amount) : 0,
+          };
+        } else {
+          grouped[groupKey].amount += item.amount;
+          grouped[groupKey].transactions.push(item); // Add to transactions list
+          grouped[groupKey].transactionCount += 1;
+          if (item.amount > 0) {
+            grouped[groupKey].totalIncome += item.amount;
+          } else if (item.amount < 0) {
+            grouped[groupKey].totalExpenses += Math.abs(item.amount);
+          }
+          // Merge tags
+          grouped[groupKey].tags = [
+            ...new Set([...grouped[groupKey].tags, ...item.tags].map((tag) => JSON.stringify(tag))),
+          ].map((tag) => JSON.parse(tag));
+          // Update type and name if they differ
+          grouped[groupKey].type = grouped[groupKey].type === item.type ? item.type : 'Mixed';
+          grouped[groupKey].name = grouped[groupKey].name === item.name ? item.name : 'Multiple';
+        }
+      });
+
+      return Object.values(grouped);
+    });
+
+    // Function to update table data (for custom range)
+    const updateTableData = () => {
+      // Trigger recomputation of groupedData
+      groupedData.value;
+    };
+
+    // Format amount for display
+    const formatAmount = (amount) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(Math.abs(amount));
+    };
+
+    // Export to CSV
+    const exportToCSV = () => {
+      const wrapCsvValue = (val, formatFn) => {
+        let formatted = formatFn ? formatFn(val) : val;
+        formatted = formatted === undefined || formatted === null ? '' : String(formatted);
+        formatted = formatted.split('"').join('""');
+        return `"${formatted}"`;
+      };
+
+      const content = [
+        columns.map((col) => wrapCsvValue(col.label)).join(','),
+        ...groupedData.value.map((row) =>
+          columns
+            .map((col) => {
+              if (col.name === 'amount') {
+                return wrapCsvValue(row[col.field], formatAmount);
+              } else if (col.name === 'tags') {
+                return wrapCsvValue(row[col.field].map((tag) => tag.name).join(';'));
+              }
+              return wrapCsvValue(row[col.field]);
+            })
+            .join(','),
+        ),
+      ].join('\r\n');
+
+      const status = exportFile('financial-data.csv', content, {
+        mimeType: 'text/csv;charset=utf-8;',
+        byteOrderMark: '\uFEFF',
+      });
+
+      if (status !== true) {
+        console.error('Export failed:', status);
+      }
+    };
+
+    // Export to JSON
+    const exportToJSON = () => {
+      const jsonContent = JSON.stringify(groupedData.value, null, 2);
+      const status = exportFile('financial-data.json', jsonContent, {
+        mimeType: 'application/json;charset=utf-8;',
+        byteOrderMark: '\uFEFF',
+      });
+
+      if (status !== true) {
+        console.error('Export failed:', status);
+      }
+    };
+
+    return {
+      groupBy,
+      groupByOptions,
+      customStartDate,
+      customEndDate,
+      columns,
+      groupedData,
+      pagination,
+      updateTableData,
+      formatAmount,
+      exportToCSV,
+      exportToJSON,
+    };
+  },
+};
+</script>
