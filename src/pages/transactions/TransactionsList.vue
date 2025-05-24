@@ -1,7 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
-
+import {
+  parse,
+  format,
+  isValid,
+  startOfWeek,
+  getWeek,
+  getYear,
+  compareDesc,
+  compareAsc,
+} from 'date-fns'
 import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from '@/stores/transactions';
 import { storeToRefs } from 'pinia';
@@ -77,17 +86,6 @@ const filteredData = computed(() => {
   })
 })
 
-import {
-  parse,
-  format,
-  isValid,
-  startOfWeek,
-  getWeek,
-  getYear,
-  compareDesc,
-  compareAsc,
-} from 'date-fns'
-
 const sortOrder = ref('desc') // or 'asc'
 
 const sortOptions = [
@@ -95,7 +93,6 @@ const sortOptions = [
   { label: 'Oldest First', value: 'asc' },
 ]
 
-// 👇 use this to safely parse your custom-formatted dates
 const parseDate = (dateStr) => parse(dateStr, 'yyyy/MM/dd', new Date())
 
 const groupedData = computed(() => {
@@ -170,45 +167,6 @@ const groupedData = computed(() => {
 
   return Object.fromEntries(sorted)
 })
-
-
-
-// Grouped data logic
-// const groupedData = computed(() => {
-//   const formatter = (d) => {
-//     switch (groupBy.value) {
-//       case 'day': return date.formatDate(d, 'YYYY-MM-DD')
-//       case 'week': {
-//         const week = date.formatDate(d, 'WW')
-//         const year = date.formatDate(d, 'YYYY')
-//         return `Week ${week}, ${year}`
-//       }
-//       case 'month': return date.formatDate(d, 'MMMM YYYY')
-//       case 'year': return date.formatDate(d, 'YYYY')
-//       case 'range': return 'In Range'
-//     }
-//   }
-
-//   const grouped = {}
-
-//   filteredData.value.forEach(transaction => {
-//     const key = formatter(transaction.date)
-//     if (!grouped[key]) {
-//       grouped[key] = {
-//         transactions: [],
-//         income: 0,
-//         expense: 0,
-//       }
-//     }
-
-//     grouped[key].transactions.push(transaction)
-//     if (transaction.type === 'Income') grouped[key].income += transaction.amount
-//     if (transaction.type === 'Expense') grouped[key].expense += Math.abs(transaction.amount)
-//   })
-
-//   return grouped
-// })
-
 
 function resetFilters() {
   selectedTags.value = []
