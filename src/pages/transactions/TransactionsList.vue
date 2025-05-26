@@ -1,16 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { date, Dialog, Notify } from 'quasar'
-import {
-  parse,
-  format,
-  isValid,
-  startOfWeek,
-  getWeek,
-  getYear,
-  compareDesc,
-  compareAsc,
-} from 'date-fns'
+import { parse, format, startOfWeek, endOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
 import BalanceSummary from "@/components/BalanceSummary.vue";
 import { useTransactionsStore } from '@/stores/transactions';
 import { storeToRefs } from 'pinia';
@@ -59,119 +50,247 @@ const tagOptions = computed(() => {
 });
 
 
-const selectedTags = ref([])
+const searchQuery = ref('');
+const selectedTags = ref([]);
+const groupBy = ref('Month');
+const customStartDate = ref('2024-01-01');
+const customEndDate = ref('2025-12-31');
+const groupedTransactions = ref([]);
 const selectedType = ref(null)
-const groupBy = computed({
-  get: () => transactionsStore.groupBy,
-  set: (val) => transactionsStore.setGroupBy(val),
-})
+// const groupBy = computed({
+//   get: () => transactionsStore.groupBy,
+//   set: (val) => transactionsStore.setGroupBy(val),
+// })
 const dateRange = ref({ start: '', end: '' })
 
-const groupOptions = ['day', 'week', 'month', 'year', 'range']
+const groupByOptions = ['Day', 'Week', 'Month', 'Year', 'Custom Range'];
 
-// Filtered Data
-const filteredData = computed(() => {
-  return transactions.value.filter(transaction => {
+const updateGrouping = () => {
+  if (!transactions.value || !Array.isArray(transactions.value)) {
+    groupedTransactions.value = [];
+    return;
+  }
+
+  // Filter transactions based on search query and selected tags
+  const filteredTransactions = transactions.value.filter(transaction => {
+    if (!transaction || !transaction.date) return false;
+
+    // Search filter
+    const query = searchQuery.value ? searchQuery.value.toLowerCase().trim() : '';
+    const matchesSearch = !query || (
+      (transaction.name && transaction.name.toLowerCase().includes(query)) ||
+      (transaction.date && transaction.date.toLowerCase().includes(query)) ||
+      (transaction.amount && transaction.amount.toString().includes(query)) ||
+      (transaction.tags && transaction.tags.some(tag => tag.name && tag.name.toLowerCase().includes(query)))
+    );
+
+    // Tag filter
+    const matchesTags = selectedTags.value.length === 0 || transaction.tags.some(tag =>
+      selectedTags.value.includes(tag.id)
+     )
+
     const tagMatch = selectedTags.value.length === 0 || transaction.tags.some(tag =>
       selectedTags.value.includes(tag.id)
-    )
-    const typeMatch = !selectedType.value || transaction.type === selectedType.value
+     )
 
-    const dateMatch = groupBy.value !== 'range' || (date.isValid(dateRange.value.start) &&
-      date.isValid(dateRange.value.end) &&
-      new Date(t.date) >= new Date(dateRange.value.start) &&
-      new Date(t.date) <= new Date(dateRange.value.end))
+    return matchesSearch && matchesTags;
+  });
 
-    return tagMatch && typeMatch && dateMatch
-  })
-})
-
-const sortOrder = ref('desc') // or 'asc'
-
-const sortOptions = [
-  { label: 'Newest First', value: 'desc' },
-  { label: 'Oldest First', value: 'asc' },
-]
-
-const parseDate = (dateStr) => parse(dateStr, 'yyyy/MM/dd', new Date())
-
-const groupedData = computed(() => {
-  const groupKey = (rawDate) => {
-    const d = parseDate(rawDate)
-    if (!isValid(d)) return 'Invalid Date'
+  const grouped = {};
+  filteredTransactions.forEach(transaction => {
+    const date = parse(transaction.date, 'yyyy/MM/dd', new Date());
+    let key, baseLabel;
 
     switch (groupBy.value) {
-      case 'day':
-        return format(d, 'yyyy-MM-dd')
-      case 'week': {
-        const week = getWeek(d)
-        const year = getYear(d)
-        return `Week ${week}, ${year}`
+      case 'Day':
+        key = format(date, 'yyyy-MM-dd');
+        baseLabel = key;
+        break;
+      case 'Week':
+        key = `${format(startOfWeek(date, { weekStartsOn: 0 }), 'yyyy-MM-dd')} to ${format(endOfWeek(date, { weekStartsOn: 0 }), 'yyyy-MM-dd')}`;
+        baseLabel = key;
+        break;
+      case 'Month':
+        key = format(startOfMonth(date), 'yyyy-MM');
+        baseLabel = key;
+        break;
+      case 'Year':
+        key = format(startOfYear(date), 'yyyy');
+        baseLabel = key;
+        break;
+      case 'Custom Range':
+        const start = parse(customStartDate.value, 'yyyy-MM-dd', new Date());
+        const end = parse(customEndDate.value, 'yyyy-MM-dd', new Date());
+        if (isWithinInterval(date, { start, end })) {
+          key = `${customStartDate.value} to ${customEndDate.value}`;
+          baseLabel = key;
+        } else {
+          return;
+        }
+        break;
+    }
+
+    if (!grouped[key]) {
+      grouped[key] = { label: baseLabel, transactions: [], startDate: date };
+    }
+    grouped[key].transactions.push(transaction);
+  });
+
+  // Update labels with transaction count and totals
+  groupedTransactions.value = Object.values(grouped)
+    .map(group => {
+      // Sort transactions within group (newest first)
+      group.transactions.sort((a, b) =>
+        parse(b.date, 'yyyy/MM/dd', new Date()).getTime() -
+        parse(a.date, 'yyyy/MM/dd', new Date()).getTime()
+      );
+
+      // Calculate totals
+      const transactionCount = group.transactions.length;
+      const income = group.transactions
+        .filter(t => t.amount >= 0)
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expenses = group.transactions
+        .filter(t => t.amount < 0)
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      // Update label
+      group.label = `${group.label} (${transactionCount} transaction${transactionCount !== 1 ? 's' : ''}, Income: $${income}, Expenses: $${expenses})`;
+
+      return group;
+    })
+    .sort((a, b) => {
+      let dateA, dateB;
+      switch (groupBy.value) {
+        case 'Day':
+          dateA = parse(a.label.split(' (')[0], 'yyyy-MM-dd', new Date());
+          dateB = parse(b.label.split(' (')[0], 'yyyy-MM-dd', new Date());
+          break;
+        case 'Week':
+        case 'Custom Range':
+          dateA = parse(a.label.split(' (')[0].split(' to ')[0], 'yyyy-MM-dd', new Date());
+          dateB = parse(b.label.split(' (')[0].split(' to ')[0], 'yyyy-MM-dd', new Date());
+          break;
+        case 'Month':
+          dateA = parse(a.label.split(' (')[0], 'yyyy-MM', new Date());
+          dateB = parse(b.label.split(' (')[0], 'yyyy-MM', new Date());
+          break;
+        case 'Year':
+          dateA = parse(a.label.split(' (')[0], 'yyyy', new Date());
+          dateB = parse(b.label.split(' (')[0], 'yyyy', new Date());
+          break;
       }
-      case 'month':
-        return format(d, 'MMMM yyyy')
-      case 'year':
-        return format(d, 'yyyy')
-      case 'range':
-        return 'In Range'
-      default:
-        return format(d, 'yyyy-MM-dd')
-    }
-  }
+      return dateB.getTime() - dateA.getTime();
+    });
+};
 
-  const grouped = new Map()
+// Initialize
+onMounted(() => {
+  updateGrouping();
+});
 
-  filteredData.value.forEach((transaction) => {
-    const key = groupKey(transaction.date)
-    if (!grouped.has(key)) {
-      grouped.set(key, {
-        dateRef: transaction.date,
-        transactions: [],
-        income: 0,
-        expense: 0,
-      })
-    }
+// Filtered Data
+// const filteredData = computed(() => {
+//   return transactions.value.filter(transaction => {
+//     const tagMatch = selectedTags.value.length === 0 || transaction.tags.some(tag =>
+//       selectedTags.value.includes(tag.id)
+//     )
+//     const typeMatch = !selectedType.value || transaction.type === selectedType.value
 
-    const group = grouped.get(key)
-    group.transactions.push(transaction)
+//     const dateMatch = groupBy.value !== 'range' || (date.isValid(dateRange.value.start) &&
+//       date.isValid(dateRange.value.end) &&
+//       new Date(t.date) >= new Date(dateRange.value.start) &&
+//       new Date(t.date) <= new Date(dateRange.value.end))
 
-    if (transaction.type === 'Income') {
-      group.income += transaction.amount
-    } else if (transaction.type === 'Expense') {
-      group.expense += Math.abs(transaction.amount)
-    }
+//     return tagMatch && typeMatch && dateMatch
+//   })
+// })
 
-    // Update group date reference if needed
-    const txDate = parseDate(transaction.date)
-    const currentRef = parseDate(group.dateRef)
-    if (compareDesc(txDate, currentRef) > 0) {
-      group.dateRef = transaction.date
-    }
-  })
+// const sortOrder = ref('desc') // or 'asc'
 
-  // Sort transactions in each group
-  for (const group of grouped.values()) {
-    group.transactions.sort((a, b) =>
-      sortOrder.value === 'desc'
-        ? compareDesc(parseDate(a.date), parseDate(b.date))
-        : compareAsc(parseDate(a.date), parseDate(b.date))
-    )
-  }
+// const sortOptions = [
+//   { label: 'Newest First', value: 'desc' },
+//   { label: 'Oldest First', value: 'asc' },
+// ]
 
-  // Sort the groups
-  const sorted = Array.from(grouped.entries()).sort(([, a], [, b]) =>
-    sortOrder.value === 'desc'
-      ? compareDesc(parseDate(a.dateRef), parseDate(b.dateRef))
-      : compareAsc(parseDate(a.dateRef), parseDate(b.dateRef))
-  )
+// const parseDate = (dateStr) => parse(dateStr, 'yyyy/MM/dd', new Date())
 
-  return Object.fromEntries(sorted)
-})
+// const groupedData = computed(() => {
+//   const groupKey = (rawDate) => {
+//     const d = parseDate(rawDate)
+//     if (!isValid(d)) return 'Invalid Date'
+
+//     switch (groupBy.value) {
+//       case 'day':
+//         return format(d, 'yyyy-MM-dd')
+//       case 'week': {
+//         const week = getWeek(d)
+//         const year = getYear(d)
+//         return `Week ${week}, ${year}`
+//       }
+//       case 'month':
+//         return format(d, 'MMMM yyyy')
+//       case 'year':
+//         return format(d, 'yyyy')
+//       case 'range':
+//         return 'In Range'
+//       default:
+//         return format(d, 'yyyy-MM-dd')
+//     }
+//   }
+
+//   const grouped = new Map()
+
+//   filteredData.value.forEach((transaction) => {
+//     const key = groupKey(transaction.date)
+//     if (!grouped.has(key)) {
+//       grouped.set(key, {
+//         dateRef: transaction.date,
+//         transactions: [],
+//         income: 0,
+//         expense: 0,
+//       })
+//     }
+
+//     const group = grouped.get(key)
+//     group.transactions.push(transaction)
+
+//     if (transaction.type === 'Income') {
+//       group.income += transaction.amount
+//     } else if (transaction.type === 'Expense') {
+//       group.expense += Math.abs(transaction.amount)
+//     }
+
+//     // Update group date reference if needed
+//     const txDate = parseDate(transaction.date)
+//     const currentRef = parseDate(group.dateRef)
+//     if (compareDesc(txDate, currentRef) > 0) {
+//       group.dateRef = transaction.date
+//     }
+//   })
+
+//   // Sort transactions in each group
+//   for (const group of grouped.values()) {
+//     group.transactions.sort((a, b) =>
+//       sortOrder.value === 'desc'
+//         ? compareDesc(parseDate(a.date), parseDate(b.date))
+//         : compareAsc(parseDate(a.date), parseDate(b.date))
+//     )
+//   }
+
+//   // Sort the groups
+//   const sorted = Array.from(grouped.entries()).sort(([, a], [, b]) =>
+//     sortOrder.value === 'desc'
+//       ? compareDesc(parseDate(a.dateRef), parseDate(b.dateRef))
+//       : compareAsc(parseDate(a.dateRef), parseDate(b.dateRef))
+//   )
+
+//   return Object.fromEntries(sorted)
+// })
 
 function resetFilters() {
   selectedTags.value = []
-  selectedType.value = null
-  groupBy.value = 'month'
+  groupBy.value = 'Month'
   dateRange.value = { start: '', end: '' }
 }
 
@@ -184,13 +303,39 @@ function resetFilters() {
       <q-card>
         <q-card-section>
           <div class="row q-col-gutter-md">
-            <div class="col-12 col-sm-4">
-              <q-select outlined v-model="groupBy" :options="groupOptions" label="Group By" />
-              <q-input v-if="groupBy === 'range'" filled label="Start Date" v-model="dateRange.start" type="date" />
-              <q-input v-if="groupBy === 'range'" filled label="End Date" v-model="dateRange.end" type="date" />
+            <div class="col-12">
+              <q-input v-model="searchQuery" label="Search by Name, Date, Amount, or Tag" outlined clearable
+                @update:model-value="updateGrouping">
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
             </div>
             <div class="col-12 col-sm-4">
-              <q-select v-model="selectedTags" :options="tagOptions" label="Filter Transactions By Tags" outlined
+              <q-select outlined v-model="groupBy" @update:model-value="updateGrouping" :options="groupByOptions" label="Group By" />
+              <div v-if="groupBy === 'Custom Range'" class="row q-mt-md">
+          <div class="col-6 q-pr-sm">
+            <q-input
+              v-model="customStartDate"
+              label="Start Date (YYYY-MM-DD)"
+              outlined
+              type="date"
+              @update:model-value="updateGrouping"
+            />
+          </div>
+          <div class="col-6 q-pl-sm">
+            <q-input
+              v-model="customEndDate"
+              label="End Date (YYYY-MM-DD)"
+              outlined
+              type="date"
+              @update:model-value="updateGrouping"
+            />
+          </div>
+        </div>
+            </div>
+            <div class="col-12 col-sm-4">
+              <q-select v-model="selectedTags" @update:model-value="updateGrouping" :options="tagOptions" label="Filter Transactions By Tags" outlined
                 multiple emit-value map-options use-chips>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
@@ -211,10 +356,8 @@ function resetFilters() {
               </q-select>
             </div>
             <div class="row col-12 col-sm-4">
-              
-              <q-select v-model="sortOrder" :options="sortOptions" label="Sort by" dense outlined emit-value map-options
-                style="max-width: 180px" />
-              
+              <!-- <q-select v-model="sortOrder" :options="sortOptions" label="Sort by" dense outlined emit-value map-options
+                style="max-width: 180px" /> -->
               <!-- <q-btn-toggle v-model="sortOrder" :options="[
                 { label: 'Newest', value: 'desc' },
                 { label: 'Oldest', value: 'asc' }
@@ -225,8 +368,7 @@ function resetFilters() {
         </q-card-section>
       </q-card>
 
-      <q-expansion-item v-for="(group, key) in groupedData" :key="key"
-        :label="`${key} - ${group.transactions.length} items — +${group.income} / -${group.expense}`" expand-separator
+      <q-expansion-item v-for="(group, index) in groupedTransactions" :key="index" :label="group.label" expand-separator
         default-opened>
         <div class="q-pa-md q-gutter-md">
           <q-list bordered padding class="rounded-borders">
