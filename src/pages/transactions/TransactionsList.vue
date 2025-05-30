@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { date, Dialog, Notify } from 'quasar'
+import { Dialog, Notify } from 'quasar'
 import { parse, format, startOfWeek, endOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
-import BalanceSummary from "@/components/BalanceSummary.vue";
-import { useTransactionsStore } from '@/stores/transactions';
+import BalanceSummary from "../../components/BalanceSummary.vue";
+import { useTransactionsStore } from '../..//stores/transactions';
 import { storeToRefs } from 'pinia';
 
 const transactionsStore = useTransactionsStore();
@@ -56,7 +56,7 @@ const groupBy = ref('Month');
 const customStartDate = ref('2024-01-01');
 const customEndDate = ref('2025-12-31');
 const groupedTransactions = ref([]);
-const selectedType = ref(null)
+// const selectedType = ref(null)
 // const groupBy = computed({
 //   get: () => transactionsStore.groupBy,
 //   set: (val) => transactionsStore.setGroupBy(val),
@@ -87,11 +87,7 @@ const updateGrouping = () => {
     // Tag filter
     const matchesTags = selectedTags.value.length === 0 || transaction.tags.some(tag =>
       selectedTags.value.includes(tag.id)
-     )
-
-    const tagMatch = selectedTags.value.length === 0 || transaction.tags.some(tag =>
-      selectedTags.value.includes(tag.id)
-     )
+    )
 
     return matchesSearch && matchesTags;
   });
@@ -118,7 +114,7 @@ const updateGrouping = () => {
         key = format(startOfYear(date), 'yyyy');
         baseLabel = key;
         break;
-      case 'Custom Range':
+      case 'Custom Range': {
         const start = parse(customStartDate.value, 'yyyy-MM-dd', new Date());
         const end = parse(customEndDate.value, 'yyyy-MM-dd', new Date());
         if (isWithinInterval(date, { start, end })) {
@@ -128,6 +124,7 @@ const updateGrouping = () => {
           return;
         }
         break;
+      }
     }
 
     if (!grouped[key]) {
@@ -312,31 +309,22 @@ function resetFilters() {
               </q-input>
             </div>
             <div class="col-12 col-sm-4">
-              <q-select outlined v-model="groupBy" @update:model-value="updateGrouping" :options="groupByOptions" label="Group By" />
+              <q-select outlined v-model="groupBy" @update:model-value="updateGrouping" :options="groupByOptions"
+                label="Group By" />
               <div v-if="groupBy === 'Custom Range'" class="row q-mt-md">
-          <div class="col-6 q-pr-sm">
-            <q-input
-              v-model="customStartDate"
-              label="Start Date (YYYY-MM-DD)"
-              outlined
-              type="date"
-              @update:model-value="updateGrouping"
-            />
-          </div>
-          <div class="col-6 q-pl-sm">
-            <q-input
-              v-model="customEndDate"
-              label="End Date (YYYY-MM-DD)"
-              outlined
-              type="date"
-              @update:model-value="updateGrouping"
-            />
-          </div>
-        </div>
+                <div class="col-6 q-pr-sm">
+                  <q-input v-model="customStartDate" label="Start Date (YYYY-MM-DD)" outlined type="date"
+                    @update:model-value="updateGrouping" />
+                </div>
+                <div class="col-6 q-pl-sm">
+                  <q-input v-model="customEndDate" label="End Date (YYYY-MM-DD)" outlined type="date"
+                    @update:model-value="updateGrouping" />
+                </div>
+              </div>
             </div>
             <div class="col-12 col-sm-4">
-              <q-select v-model="selectedTags" @update:model-value="updateGrouping" :options="tagOptions" label="Filter Transactions By Tags" outlined
-                multiple emit-value map-options use-chips>
+              <q-select v-model="selectedTags" @update:model-value="updateGrouping" :options="tagOptions"
+                label="Filter Transactions By Tags" outlined multiple emit-value map-options use-chips>
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
                     <q-item-section avatar>

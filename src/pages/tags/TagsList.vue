@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 
-import { useTransactionsStore } from '@/stores/transactions';
+import { useTransactionsStore } from '../../stores/transactions';
 import { Dialog, Notify } from 'quasar';
 
 const transactionsStore = useTransactionsStore();
@@ -55,7 +55,7 @@ function confirm(id) {
   }).onOk(() => {
     try {
       transactionsStore.deleteTag(id)
-      
+
       Notify.create({
         message: 'Tag Deleted Successfully',
         type: "positive",
@@ -78,9 +78,10 @@ function confirm(id) {
 </script>
 
 <template>
-  <q-page class="q-pa-md"> 
-    <q-table grid flat bordered title="Tags" :rows="rows" :columns="columns" row-key="id" :filter="filter" no-data-label="No Tags Found">
-      
+  <q-page class="q-pa-md">
+    <q-table grid flat bordered title="Tags" :rows="rows" :columns="columns" row-key="id" :filter="filter"
+      no-data-label="No Tags Found">
+
       <!-- Search Template Slot -->
       <template v-slot:top-right>
         <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -127,7 +128,7 @@ function confirm(id) {
         </div>
       </template>
     </q-table>
-    
+
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn fab icon="add" color="primary" :to="{ name: 'create-tag' }">
       </q-btn>

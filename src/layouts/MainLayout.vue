@@ -1,77 +1,33 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { Dark, useQuasar } from 'quasar';
+import { useSettingsStore } from 'src/stores/settings';
 import { useI18n } from 'vue-i18n';
 
-// import { useNotesStore } from 'src/stores/notes-store';
-
-defineOptions({
-  name: 'MainLayout'
-})
-
 const { locale } = useI18n();
-const $q = useQuasar();
+const settingsStore = useSettingsStore();
 
-const leftDrawerOpen = ref(false)
-
-// const darkQuery = '(prefers-color-scheme: dark)';
-// const queryList = window.matchMedia(darkQuery);
-// Dark.set(queryList.matches);
-// queryList.addEventListener('change', (event) => {
-//     Dark.set(event.matches);
-// });
-
-// Initialize dark mode from localStorage
-const darkMode = localStorage.getItem('darkMode') === 'true';
-$q.dark.set(darkMode);
-
-const toggleDarkMode = () => {
-  $q.dark.toggle();
-  localStorage.setItem('darkMode', $q.dark.isActive);
-};
-
-// Initialize locale from localStorage
-const savedLocale = localStorage.getItem('locale') || 'en';
-locale.value = savedLocale;
-
-// Watch for locale changes and update RTL
-watch(locale, (newLocale) => {
-  localStorage.setItem('locale', newLocale);
-  localStorage.getItem('locale')
-  $q.lang.set({ rtl: newLocale === 'ar' }); // Enable/disable RTL
-  document.body.classList.toggle('rtl', newLocale === 'ar');
-});
-
-// Compute layout direction based on locale
-const layoutDirection = computed(() => (locale.value === 'ar' ? 'rtl' : 'ltr'));
-
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+function switchLanguage() {
+  const newLang = settingsStore.language === 'en' ? 'ar' : 'en'
+  settingsStore.setLanguage(newLang)
+  locale.value = newLang
 }
-
-// const notesStore = useNotesStore();
 </script>
+
 <template>
-  <q-layout :dir="layoutDirection" view="hHh Lpr lff" class="shadow-2 rounded-borders">
-    <q-header elevated :class="Dark.isActive ? 'bg-dark' : 'bg-white text-dark'">
+  <q-layout view="hHh Lpr lff">
+    <q-header elevated :class="settingsStore.darkMode ? 'bg-dark' : 'bg-primary'">
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-
-        <q-toolbar-title>
-          Expenses
-        </q-toolbar-title>
-
+        <q-btn flat @click="settingsStore.toggleSideBar()" round dense icon="menu" />
+        <q-toolbar-title>{{ $t('title') }}</q-toolbar-title>
         <q-space />
-        <q-btn flat round :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode" />
-        <q-select v-model="locale" :options="[
-          { label: 'English', value: 'en' },
-          { label: 'العربية', value: 'ar' },
-        ]" dense options-dense emit-value map-options />
+        <q-btn flat round dense icon="translate" @click="switchLanguage" />
+        <q-btn flat round dense :icon="settingsStore.darkMode ? 'light_mode' : 'dark_mode'"
+          @click="settingsStore.toggleDarkMode()" />
+        <q-btn flat round dense icon="settings" to="/settings" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" overlay :width="200" :breakpoint="700" side="left" behavior="desktop" bordered>
+    <q-drawer v-model="settingsStore.sideBar" :side="settingsStore.language === 'en' ? 'left' : 'right'" :width="200"
+      :breakpoint="700" elevated>
       <q-scroll-area class="fit">
         <q-list padding class="menu-list">
           <q-item exact clickable v-ripple to="/">
@@ -80,7 +36,17 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              Home
+              {{ $t('title') }}
+            </q-item-section>
+          </q-item>
+
+          <q-item exact clickable v-ripple to="/settings">
+            <q-item-section avatar>
+              <q-icon name="settings" />
+            </q-item-section>
+
+            <q-item-section>
+              {{ $t('settings') }}
             </q-item-section>
           </q-item>
 
@@ -90,7 +56,17 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              About
+              {{ $t('about') }}
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple @click="settingsStore.toggleDarkMode()">
+            <q-item-section avatar>
+              <q-icon :name="settingsStore.darkMode ? 'light_mode' : 'dark_mode'" />
+            </q-item-section>
+
+            <q-item-section>
+              {{ $t('toggle_theme') }}
             </q-item-section>
           </q-item>
 
@@ -100,7 +76,7 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              Tags
+              {{ $t('tags') }}
             </q-item-section>
           </q-item>
 
@@ -110,7 +86,7 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              Chart.js Charts
+              {{ $t('charts') }}
             </q-item-section>
           </q-item>
 
@@ -120,7 +96,7 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              ApexCharts
+              {{ $t('charts') }}
             </q-item-section>
           </q-item>
 
@@ -130,7 +106,7 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              Data Import
+              {{ $t('import_data') }}
             </q-item-section>
           </q-item>
 
@@ -140,27 +116,7 @@ function toggleLeftDrawer() {
             </q-item-section>
 
             <q-item-section>
-              Data Export
-            </q-item-section>
-          </q-item>
-
-          <q-item v-if="!Dark.isActive" clickable v-ripple @click="toggleDarkMode">
-            <q-item-section avatar>
-              <q-icon name="dark_mode" />
-            </q-item-section>
-
-            <q-item-section>
-              Dark Mode
-            </q-item-section>
-          </q-item>
-
-          <q-item v-else clickable v-ripple @click="toggleDarkMode">
-            <q-item-section avatar>
-              <q-icon name="light_mode" />
-            </q-item-section>
-
-            <q-item-section>
-              Light Mode
+              {{ $t('export_data') }}
             </q-item-section>
           </q-item>
         </q-list>

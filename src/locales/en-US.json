@@ -1,0 +1,12 @@
+{
+    "app": {
+        "title": "Dashboard",
+        "description": "Welcome to your dashboard"
+    },
+    "settings": {
+        "darkMode": "Dark Mode",
+        "language": "Language",
+        "english": "English",
+        "arabic": "Arabic"
+    }
+}

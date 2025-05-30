@@ -1,18 +1,30 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia'
 
-export const useSettingsStore = defineStore("settinsg", {
+export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    darkMode: JSON.parse(localStorage.getItem("darkMode")) ?? false,
-    language: localStorage.getItem("language") || "en",
+    darkMode: true,
+    language: 'en',
+    sideBar: false,
+    currency: 'USD',
+    hasCompletedSetup: false,
   }),
   actions: {
+    setDarkMode(value) {
+      this.darkMode = value
+      //document.documentElement.classList.toggle('dark', value)
+    },
     toggleDarkMode() {
-      this.darkMode = !this.darkMode;
-      localStorage.setItem("darkMode", JSON.stringify(this.darkMode));
+      this.darkMode = !this.darkMode
     },
     setLanguage(lang) {
-      this.language = lang;
-      localStorage.setItem("language", lang);
+      this.language = lang
+    },
+    toggleSideBar() {
+      this.sideBar = !this.sideBar
+    },
+    completeSetup() {
+      this.hasCompletedSetup = true
     },
   },
-});
+  persist: true,
+})
