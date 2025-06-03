@@ -8,8 +8,14 @@ export function useSettings() {
     { value: 'ar', label: 'العربية' },
   ]
 
+  const availableThemes = [
+    { value: 'true', label: 'Dark Mode' },
+    { value: 'false', label: 'Light Mode' },
+  ]
+
   return {
     settingsStore,
     availableLanguages,
+    availableThemes,
   }
 }

@@ -7,6 +7,7 @@ import { Notify } from "quasar";
 const { t, locale } = useI18n();
 const settings = useSettingsStore();
 const { availableLanguages } = useSettings();
+
 const step = ref(1);
 
 function applyLanguage() {
@@ -39,10 +40,9 @@ function submit() {
     <div class="q-pa-md">
       <q-stepper v-model="step" ref="stepper" color="primary" animated>
         <q-step :name="1" title="Language" icon="settings" :done="step > 1">
-          <q-card class="my-card">
+          <q-div class="my-card">
             <q-card-section>
-              <div class="text-h6">Choose a Language</div>
-              <div class="text-h6 q-my-sm">اختر اللغة</div>
+              <div class="text-h6">Choose a Language / اختر اللغة</div>
             </q-card-section>
             <q-card-section>
               <div class="q-pa-md">
@@ -55,11 +55,11 @@ function submit() {
                 class="q-ml-sm" />
               <q-btn @click="$refs.stepper.next()" color="primary" label="Continue" />
             </q-card-actions>
-          </q-card>
+          </q-div>
         </q-step>
 
         <q-step :name="2" title="Theme" icon="create_new_folder" :done="step > 2">
-          <q-card class="my-card">
+          <q-div class="my-card">
             <q-card-section>
               <div class="text-h6">{{ t('theme') }}</div>
             </q-card-section>
@@ -74,11 +74,11 @@ function submit() {
                 class="q-ml-sm" />
               <q-btn @click="$refs.stepper.next()" color="primary" label="Continue" />
             </q-card-actions>
-          </q-card>
+          </q-div>
         </q-step>
 
         <q-step :name="3" title="Currancy" icon="add_comment">
-          <q-card class="my-card">
+          <div class="my-card">
             <q-card-section>
               <div class="text-h6">{{ t('currency') }}</div>
             </q-card-section>
@@ -91,7 +91,7 @@ function submit() {
                 class="q-ml-sm" />
               <q-btn @click="submit" color="primary" label="Finish" />
             </q-card-actions>
-          </q-card>
+          </div>
         </q-step>
 
         <!-- <template v-slot:navigation>
