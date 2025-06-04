@@ -1,18 +1,20 @@
 <script setup>
+import { useSettingsStore } from "src/stores/settings";
 import { useTransactionsStore } from "../stores/transactions"
-const { balance, getIncomes, getExpenses } = useTransactionsStore()
+const { balance, getIncomes, getExpenses } = useTransactionsStore();
+const { currency } = useSettingsStore();
 </script>
 
 <template>
   <q-card class="my-card q-my-md">
     <q-card-section>
-      <div class="text-h6">Your Expenses</div>
-      <div class="text-subtitle2">Balance: {{ balance }}</div>
+      <div class="text-h6">{{ $t('title') }}</div>
+      <div class="text-subtitle2">{{ $t('balance') }}: {{ balance }} {{ currency }}</div>
     </q-card-section>
     <q-separator dark />
     <q-card-actions>
-      <q-btn>Income: {{ getIncomes }} $</q-btn>
-      <q-btn>Expenses: {{ getExpenses }} $</q-btn>
+      <q-btn>{{ $t('incomes') }}: {{ getIncomes }} {{ currency }}</q-btn>
+      <q-btn>{{ $t('expenses') }}: {{ getExpenses }} {{ currency }}</q-btn>
     </q-card-actions>
   </q-card>
 </template>

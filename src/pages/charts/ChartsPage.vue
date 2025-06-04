@@ -64,16 +64,16 @@ const expensesAndIncomesData = {
     <BalanceSummary />
     <q-card class="my-card" flat bordered>
       <q-card-section>
-        <div class="text-h6">Data Pie Charts</div>
-        <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
+        <div class="text-h6">{{ $t('charts') }}</div>
+        <!-- <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
           in your data</div>
         <div class="text-subtitle2">Currently it has two sections, Visualizng Incomes and Expenses, and Visualizing
-          Expenses by tags</div>
+          {{ $t('incomes') }}</div> -->
       </q-card-section>
 
       <q-tabs v-model="tab" class="text-teal">
-        <q-tab label="Expenses By Tags" name="one" />
-        <q-tab label="Expenses and Incomes" name="two" />
+        <q-tab :label="$t('expensesByTags')" name="one" />
+        <q-tab :label="$t('expensesandIncomes')" name="two" />
       </q-tabs>
 
       <q-separator />
@@ -85,7 +85,7 @@ const expensesAndIncomesData = {
             <Pie :data="expensesChartData" :options="options" />
           </div>
           <div v-else>
-            <p>No Expenses Found</p>
+            <p>{{ $t('noData') }}</p>
           </div>
         </q-tab-panel>
 
@@ -95,17 +95,11 @@ const expensesAndIncomesData = {
             <Pie :data="expensesAndIncomesData" :options="options" />
           </div>
           <div v-else>
-            <p>No Transactions Found</p>
+            <p>{{ $t('noData') }}</p>
           </div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
-
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn fab icon="add" color="primary" :to="{ name: 'create-transaction' }">
-      </q-btn>
-    </q-page-sticky>
-
   </q-page>
 </template>
 

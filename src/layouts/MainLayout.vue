@@ -90,7 +90,7 @@ function switchLanguage() {
             </q-item-section>
           </q-item>
 
-          <q-item exact clickable v-ripple to="/apex-charts">
+          <!-- <q-item exact clickable v-ripple to="/apex-charts">
             <q-item-section avatar>
               <q-icon name="menu" />
             </q-item-section>
@@ -98,7 +98,7 @@ function switchLanguage() {
             <q-item-section>
               {{ $t('charts') }}
             </q-item-section>
-          </q-item>
+          </q-item> -->
 
           <q-item exact clickable v-ripple to="/import">
             <q-item-section avatar>
