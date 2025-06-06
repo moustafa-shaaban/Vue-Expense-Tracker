@@ -126,7 +126,6 @@ const updateGrouping = () => {
         break;
       }
     }
-
     if (!grouped[key]) {
       grouped[key] = { label: baseLabel, transactions: [], startDate: date };
     }

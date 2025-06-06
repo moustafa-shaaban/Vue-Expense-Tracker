@@ -17,9 +17,6 @@ const transactionsTags = ref([]);
 
 transactionsTags.value = transactionsStore.tags;
 
-
-let expenses = transactionsStore.$state.transactions.filter((transaction) => transaction.type === 'Expense')
-
 const expensesByTag = transactionsStore.getExpensesList.reduce((acc, expense) => {
   expense.tags.forEach(tag => {
     if (!acc[tag.name]) {
@@ -65,10 +62,6 @@ const expensesAndIncomesData = {
     <q-card class="my-card" flat bordered>
       <q-card-section>
         <div class="text-h6">{{ $t('charts') }}</div>
-        <!-- <div class="text-subtitle2">This section of the app has pie charts that visualize the available transactions
-          in your data</div>
-        <div class="text-subtitle2">Currently it has two sections, Visualizng Incomes and Expenses, and Visualizing
-          {{ $t('incomes') }}</div> -->
       </q-card-section>
 
       <q-tabs v-model="tab" class="text-teal">
@@ -81,7 +74,6 @@ const expensesAndIncomesData = {
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="one">
           <div v-if="expenses.length > 0">
-            <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
             <Pie :data="expensesChartData" :options="options" />
           </div>
           <div v-else>
@@ -91,7 +83,6 @@ const expensesAndIncomesData = {
 
         <q-tab-panel name="two">
           <div v-if="transactionsStore.transactions.length > 0">
-            <!-- <Pie :data="expensesAndIncomesData" :options="options" /> -->
             <Pie :data="expensesAndIncomesData" :options="options" />
           </div>
           <div v-else>

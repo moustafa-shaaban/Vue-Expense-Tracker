@@ -39,7 +39,7 @@ function submit() {
   <q-page class="flex flex-center">
     <div class="q-pa-md">
       <q-stepper v-model="step" ref="stepper" color="primary" animated>
-        <q-step :name="1" title="Language" icon="settings" :done="step > 1">
+        <q-step :name="1" :title="t('language')" icon="settings" :done="step > 1">
           <q-div class="my-card">
             <q-card-section>
               <div class="text-h6">Choose a Language / اختر اللغة</div>
@@ -51,14 +51,14 @@ function submit() {
               </div>
             </q-card-section>
             <q-card-actions align="around">
-              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back"
+              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" :label="t('back')"
                 class="q-ml-sm" />
-              <q-btn @click="$refs.stepper.next()" color="primary" label="Continue" />
+              <q-btn @click="$refs.stepper.next()" color="primary" :label="t('next')" />
             </q-card-actions>
           </q-div>
         </q-step>
 
-        <q-step :name="2" title="Theme" icon="create_new_folder" :done="step > 2">
+        <q-step :name="2" :title="t('theme')" icon="create_new_folder" :done="step > 2">
           <q-div class="my-card">
             <q-card-section>
               <div class="text-h6">{{ t('theme') }}</div>
@@ -70,14 +70,14 @@ function submit() {
               </select>
             </q-card-section>
             <q-card-actions align="around">
-              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back"
+              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" :label="t('back')"
                 class="q-ml-sm" />
-              <q-btn @click="$refs.stepper.next()" color="primary" label="Continue" />
+              <q-btn @click="$refs.stepper.next()" color="primary" :label="t('next')" />
             </q-card-actions>
           </q-div>
         </q-step>
 
-        <q-step :name="3" title="Currancy" icon="add_comment">
+        <q-step :name="3" :title="t('currency')" icon="add_comment">
           <div class="my-card">
             <q-card-section>
               <div class="text-h6">{{ t('currency') }}</div>
@@ -87,9 +87,9 @@ function submit() {
                 map-options />
             </q-card-section>
             <q-card-actions align="around">
-              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back"
+              <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" :label="t('back')"
                 class="q-ml-sm" />
-              <q-btn @click="submit" color="primary" label="Finish" />
+              <q-btn @click="submit" color="primary" :label="t('finish')" />
             </q-card-actions>
           </div>
         </q-step>
