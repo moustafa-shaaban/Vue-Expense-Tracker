@@ -5,6 +5,7 @@ import { Pie } from 'vue-chartjs'
 import BalanceSummary from "../../components/BalanceSummary.vue";
 import { useTransactionsStore } from "../../stores/transactions";
 import { colors } from 'quasar'
+import { storeToRefs } from 'pinia';
 
 const { getPaletteColor } = colors
 
@@ -12,10 +13,9 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const transactionsStore = useTransactionsStore();
 
-const tab = ref('one');
-const transactionsTags = ref([]);
+const { getExpensesList } = storeToRefs(transactionsStore)
 
-transactionsTags.value = transactionsStore.tags;
+const tab = ref('one');
 
 const expensesByTag = transactionsStore.getExpensesList.reduce((acc, expense) => {
   expense.tags.forEach(tag => {
@@ -73,7 +73,7 @@ const expensesAndIncomesData = {
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="one">
-          <div v-if="expenses.length > 0">
+          <div v-if="getExpensesList.length > 0">
             <Pie :data="expensesChartData" :options="options" />
           </div>
           <div v-else>
