@@ -90,6 +90,16 @@ function switchLanguage() {
             </q-item-section>
           </q-item>
 
+          <q-item exact clickable v-ripple to="/data-query">
+            <q-item-section avatar>
+              <q-icon name="info" />
+            </q-item-section>
+
+            <q-item-section>
+              {{ $t('dataQuery') }}
+            </q-item-section>
+          </q-item>
+
           <!-- <q-item exact clickable v-ripple to="/apex-charts">
             <q-item-section avatar>
               <q-icon name="menu" />

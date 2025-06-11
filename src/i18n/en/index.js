@@ -28,4 +28,5 @@ export default {
   expensesandIncomes: 'Expenses and Incomes',
   noData: 'No Data Found',
   noTransactions: 'No Transactions Found, Click the plus sign to create a new one',
+  dataQuery: 'Data Query',
 }

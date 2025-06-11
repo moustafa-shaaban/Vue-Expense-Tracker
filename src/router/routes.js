@@ -63,6 +63,11 @@ const routes = [
         component: () => import('pages/charts/ChartsPage.vue'),
       },
       {
+        path: '/data-query',
+        name: 'data-query',
+        component: () => import('pages/charts/DataQuery.vue'),
+      },
+      {
         path: '/apex-charts',
         name: 'apex-charts',
         component: () => import('pages/charts/ApexChartsPage.vue'),

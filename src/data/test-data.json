@@ -1,0 +1,107 @@
+[
+  {
+    "id": "1",
+    "name": "Salary",
+    "amount": 1000,
+    "type": "Income",
+    "tags": [
+      {
+        "id": "7cb203cc-3881-4fd9-9ee0-c1b2d3ed2fac",
+        "name": "Salary",
+        "type": "income",
+        "color": "indigo"
+      }
+    ],
+    "date": "2024/03/01"
+  },
+  {
+    "id": "2",
+    "name": "Rent",
+    "amount": -200,
+    "type": "Expense",
+    "tags": [
+      {
+        "id": "82b736fc-2720-4e53-8e2f-26f82271a8ca",
+        "name": "Rent",
+        "type": "expense",
+        "color": "red"
+      }
+    ],
+    "date": "2025/04/09"
+  },
+  {
+    "id": "3",
+    "name": "Rent",
+    "amount": -300,
+    "type": "Expense",
+    "tags": [
+      {
+        "id": "82b736fc-2720-4e53-8e2f-26f82271a8ca",
+        "name": "Rent",
+        "type": "expense",
+        "color": "red"
+      }
+    ],
+    "date": "2025/06/02"
+  },
+  {
+    "id": "4",
+    "name": "Chips",
+    "amount": -10,
+    "type": "Expense",
+    "tags": [
+      {
+        "id": "f9ea2c93-d1ac-4f93-9015-9e97d80abb49",
+        "name": "Food",
+        "type": "expense",
+        "color": "orange"
+      }
+    ],
+    "date": "2025/05/24"
+  },
+  {
+    "id": "5",
+    "name": "Chips",
+    "amount": -10,
+    "type": "Expense",
+    "tags": [
+      {
+        "id": "f9ea2c93-d1ac-4f93-9015-9e97d80abb49",
+        "name": "Food",
+        "type": "expense",
+        "color": "orange"
+      }
+    ],
+    "date": "2025/06/10"
+  },
+  {
+    "id": "6",
+    "name": "Chips",
+    "amount": -20,
+    "type": "Expense",
+    "tags": [
+      {
+        "id": "f9ea2c93-d1ac-4f93-9015-9e97d80abb49",
+        "name": "Food",
+        "type": "expense",
+        "color": "orange"
+      }
+    ],
+    "date": "2025/06/02"
+  },
+  {
+    "id": "7",
+    "name": "Salary",
+    "amount": 1000,
+    "type": "Income",
+    "tags": [
+      {
+        "id": "7cb203cc-3881-4fd9-9ee0-c1b2d3ed2fac",
+        "name": "Salary",
+        "type": "income",
+        "color": "indigo"
+      }
+    ],
+    "date": "2025/05/01"
+  }
+]

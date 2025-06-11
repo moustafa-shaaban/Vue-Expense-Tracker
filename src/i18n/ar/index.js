@@ -27,4 +27,5 @@ export default {
   expensesandIncomes: 'الدخل و المصروفات',
   noData: 'لا يوجد بيانات',
   noTransactions: 'لا يوجد معاملات. اضغط على علامة الاضافة لاضافة معاملة جديدة',
+  dataQuery: 'استعلام البيانات',
 }
