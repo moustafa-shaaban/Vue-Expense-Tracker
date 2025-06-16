@@ -14,11 +14,17 @@ function applyLanguage() {
   locale.value = settings.language
 }
 
+function applyTheme() {
+  settings.setDarkMode(toggleValue.value)
+}
+
+const toggleValue = ref(true)
+
 const currencyOptions = [
-  { label: 'USD - United States Dollar', value: 'USD' },
-  { label: 'EGP - Egyptian Pound', value: 'EGP' },
-  { label: 'EUR - Euro', value: 'EUR' },
-  { label: 'GBP - British Pound', value: 'GBP' },
+  { label: 'USD - United States Dollar - دولار أمريكي', value: 'USD' },
+  { label: 'EGP - Egyptian Pound - جنيه مصري', value: 'EGP' },
+  { label: 'EUR - Euro - يورو', value: 'EUR' },
+  { label: 'GBP - British Pound - جنيه إسترليني', value: 'GBP' },
 ];
 
 function submit() {
@@ -64,10 +70,12 @@ function submit() {
               <div class="text-h6">{{ t('theme') }}</div>
             </q-card-section>
             <q-card-section>
-              <select v-model="settings.darkMode">
+              <q-radio v-model="toggleValue" :val="true" :label="t('dark')" @update:model-value="applyTheme" />
+              <q-radio v-model="toggleValue" :val="false" :label="t('light')" @update:model-value="applyTheme" />
+              <!-- <select v-model="settings.darkMode">
                 <option :value="false">{{ t('light') }}</option>
                 <option :value="true">{{ t('dark') }}</option>
-              </select>
+              </select> -->
             </q-card-section>
             <q-card-actions align="around">
               <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" :label="t('back')"
@@ -114,6 +122,7 @@ function submit() {
   height: 100%;
 
 .my-card
-  width: 300px
+  width: 400px
+  height: 200px
   max-width: 1000px
 </style>
