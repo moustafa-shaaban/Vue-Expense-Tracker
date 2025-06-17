@@ -96,7 +96,7 @@ function handleSubmit() {
   <q-page class="flex items-center column q-my-lg">
     <q-card flat bordered class="form-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6 q-mb-md">Add Tag</div>
+        <div class="text-h6 q-mb-md">{{ $t('createTag') }}</div>
         <q-space />
       </q-card-section>
 
@@ -105,11 +105,11 @@ function handleSubmit() {
           <q-input filled v-model="tagName" label="Tag Name" required lazy-rules
             :rules="[val => val && val.length > 0 || 'Tag Name is required']" autofocus />
 
-          <q-select class="q-my-md" v-model="tagType" :options="tagOptions" label="Select a Type" emit-value
+          <q-select class="q-my-md" v-model="tagType" :options="tagOptions" :label="$t('selectType')" emit-value
             map-options>
           </q-select>
 
-          <q-select class="q-my-md" v-model="tagColor" :options="colorOptions" label="Select a color" emit-value
+          <q-select class="q-my-md" v-model="tagColor" :options="colorOptions" :label="$t('selectColor')" emit-value
             map-options>
             <template v-slot:option="scope">
               <q-item v-bind="scope.itemProps">

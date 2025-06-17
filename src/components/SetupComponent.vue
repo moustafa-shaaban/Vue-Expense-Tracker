@@ -15,10 +15,10 @@ function applyLanguage() {
 }
 
 function applyTheme() {
-  settings.setDarkMode(toggleValue.value)
+  settings.setDarkMode(toggleTheme.value)
 }
 
-const toggleValue = ref(true)
+const toggleTheme = ref(true)
 
 const currencyOptions = [
   { label: 'USD - United States Dollar - دولار أمريكي', value: 'USD' },
@@ -70,8 +70,8 @@ function submit() {
               <div class="text-h6">{{ t('theme') }}</div>
             </q-card-section>
             <q-card-section>
-              <q-radio v-model="toggleValue" :val="true" :label="t('dark')" @update:model-value="applyTheme" />
-              <q-radio v-model="toggleValue" :val="false" :label="t('light')" @update:model-value="applyTheme" />
+              <q-radio v-model="toggleTheme" :val="true" :label="t('dark')" @update:model-value="applyTheme" />
+              <q-radio v-model="toggleTheme" :val="false" :label="t('light')" @update:model-value="applyTheme" />
               <!-- <select v-model="settings.darkMode">
                 <option :value="false">{{ t('light') }}</option>
                 <option :value="true">{{ t('dark') }}</option>

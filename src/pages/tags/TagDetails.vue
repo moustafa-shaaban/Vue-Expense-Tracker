@@ -76,7 +76,7 @@ function confirm(id) {
   <q-page class="flex flex-center">
     <q-card v-if="isEditing" flat bordered class="my-card">
       <q-card-section class="row items-center q-pb-none q-mb-md" vertical>
-        <div class="text-h6">Edit Tag:</div>
+        <div class="text-h6">{{ $t('updateTag') }}:</div>
       </q-card-section>
 
       <q-card-section>
@@ -113,8 +113,8 @@ function confirm(id) {
         <q-btn type="button" outline size="sm"
           :to="{ name: 'transactions-by-tag', params: { id: tag.id } }">Transactions
           with this tag</q-btn>
-        <q-btn color="primary" type="button" size="sm" @click="isEditing = true">Edit</q-btn>
-        <q-btn color="negative" type="button" size="sm" @click="confirm(tag.id)">Delete</q-btn>
+        <q-btn color="primary" type="button" size="sm" @click="isEditing = true">{{ $t('update') }}</q-btn>
+        <q-btn color="negative" type="button" size="sm" @click="confirm(tag.id)">{{ $t('delete') }}</q-btn>
       </q-card-actions>
     </q-card>
 

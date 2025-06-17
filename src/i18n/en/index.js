@@ -29,4 +29,13 @@ export default {
   noData: 'No Data Found',
   noTransactions: 'No Transactions Found, Click the plus sign to create a new one',
   dataQuery: 'Data Query',
+  search: 'Search',
+  details: 'Details',
+  selectType: 'Select Type',
+  selectColor: 'Select Color',
+  createTag: 'Create Tag',
+  updateTag: 'Update Tag',
+  delete: 'Delete',
+  update: 'Update',
+  transactionsByTag: 'Transactions with this tag',
 }

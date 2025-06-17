@@ -6,7 +6,7 @@ import { Dialog, Notify } from 'quasar';
 
 const transactionsStore = useTransactionsStore();
 
-const filter = ref('');
+const searchQuery = ref('');
 
 const columns = [
   {
@@ -55,7 +55,6 @@ function confirm(id) {
   }).onOk(() => {
     try {
       transactionsStore.deleteTag(id)
-
       Notify.create({
         message: 'Tag Deleted Successfully',
         type: "positive",
@@ -79,12 +78,12 @@ function confirm(id) {
 
 <template>
   <q-page class="q-pa-md">
-    <q-table grid flat bordered title="Tags" :rows="rows" :columns="columns" row-key="id" :filter="filter"
+    <q-table grid flat bordered title="Tags" :rows="rows" :columns="columns" row-key="id" :filter="searchQuery"
       no-data-label="No Tags Found">
 
       <!-- Search Template Slot -->
       <template v-slot:top-right>
-        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+        <q-input borderless dense debounce="300" v-model="searchQuery" :placeholder="$t('search')">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -109,7 +108,7 @@ function confirm(id) {
                     <q-menu cover auto-close>
                       <q-list>
                         <q-item clickable :to="{ name: 'tag-details', params: { id: props.row.id } }">
-                          <q-item-section>Details</q-item-section>
+                          <q-item-section>{{ $t('details') }}</q-item-section>
                         </q-item>
                       </q-list>
                     </q-menu>
@@ -121,8 +120,8 @@ function confirm(id) {
             <q-separator />
 
             <q-card-actions>
-              <q-btn flat :to="{ name: 'tag-details', params: { id: props.row.id } }">Details</q-btn>
-              <q-btn flat @click="confirm(props.row.id)">Delete</q-btn>
+              <q-btn flat :to="{ name: 'tag-details', params: { id: props.row.id } }">{{ $t('details') }}</q-btn>
+              <q-btn flat @click="confirm(props.row.id)">{{ $t('delete') }}</q-btn>
             </q-card-actions>
           </q-card>
         </div>
