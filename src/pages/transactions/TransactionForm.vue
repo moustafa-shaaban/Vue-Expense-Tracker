@@ -94,43 +94,47 @@ function cancel() {
   <q-page class="flex items-center column q-my-lg">
     <q-card flat bordered class="form-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6 q-mb-md">Add Transaction</div>
+        <div class="text-h6 q-mb-md">{{ $t('createTransaction') }}</div>
         <q-space />
-        <q-btn-toggle v-model="toggleIncome" no-caps rounded unelevated toggle-color="primary" color="white"
+        <!-- <q-btn-toggle v-model="toggleIncome" no-caps rounded unelevated toggle-color="primary" color="white"
           text-color="primary" :options="[
-            { label: 'Expense', value: false },
-            { label: 'Income', value: true },
-          ]" />
+            { label: $t('expense'), value: false },
+            { label: $t('income'), value: true },
+          ]" /> -->
+        <div class="q-gutter-sm">
+          <q-radio v-model="toggleIncome" :val="false" :label="$t('expense')" color="primary" />
+          <q-radio v-model="toggleIncome" :val="true" :label="$t('income')" color="primary" />
+        </div>
       </q-card-section>
 
       <q-card-section>
         <q-form @submit.prevent="save">
           <div v-if="toggleIncome">
-            <q-input autocomplete filled v-model="transaction.name" label="Income Name" required lazy-rules
-              :rules="[val => val && val.length > 0 || 'Income Name is required']" />
+            <q-input autocomplete filled v-model="transaction.name" :label="$t('incomeName')" required lazy-rules
+              :rules="[val => val && val.length > 0 || $t('incomeNameRequired')]" />
 
-            <q-input filled v-model.number="transaction.amount" type="number" required label="Income Amount" />
+            <q-input filled v-model.number="transaction.amount" type="number" required :label="$t('incomeAmount')" />
           </div>
 
           <div v-else>
-            <q-input autocomplete filled v-model="transaction.name" label="Expense Name" required lazy-rules
-              :rules="[val => val && val.length > 0 || 'Expense Name is required']" />
+            <q-input autocomplete filled v-model="transaction.name" :label="$t('expenseName')" required lazy-rules
+              :rules="[val => val && val.length > 0 || $t('expenseNameRequired')]" />
 
-            <q-input filled v-model.number="transaction.amount" type="number" required label="Expense Amount" />
+            <q-input filled v-model.number="transaction.amount" type="number" required :label="$t('expenseAmount')" />
           </div>
 
           <q-btn icon="event" class="q-my-md" round color="primary">
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date v-model="transaction.date">
                 <div class="row items-center justify-end q-gutter-sm">
-                  <q-btn label="Cancel" color="primary" flat v-close-popup />
+                  <q-btn :label="$t('cancel')" color="primary" flat v-close-popup />
                   <q-btn label="OK" color="primary" flat v-close-popup />
                 </div>
               </q-date>
             </q-popup-proxy>
           </q-btn>
 
-          <q-select class="q-my-md" filled dense options-dense label="Tags" counter v-model="transaction.tags"
+          <q-select class="q-my-md" filled dense options-dense :label="$t('tags')" counter v-model="transaction.tags"
             :options="tags" option-value="id" option-label="name" multiple use-chips map-options clearable>
 
             <template v-slot:no-option>
