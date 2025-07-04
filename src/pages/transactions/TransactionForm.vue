@@ -51,7 +51,8 @@ function save() {
     transaction.value.amount = -Math.abs(transaction.value.amount)
   }
   if (isUpdate.value) {
-    transactionsStore.updateTransaction(transaction.value.id, transaction.value)
+    const data = JSON.parse(JSON.stringify(transaction.value))
+    transactionsStore.updateTransaction(data)
     router.push('/');
     Notify.create({
       message: 'Transaction Updated Successfully',
@@ -61,7 +62,8 @@ function save() {
       ]
     })
   } else {
-    transactionsStore.addTransaction(transaction.value)
+    const data = JSON.parse(JSON.stringify(transaction.value))
+    transactionsStore.addTransaction(data)
     router.push('/');
     Notify.create({
       message: isClone.value ? 'Transaction Cloned Successfully' : 'Transaction Created Successfully',
@@ -94,7 +96,7 @@ function cancel() {
   <q-page class="flex items-center column q-my-lg">
     <q-card flat bordered class="form-card">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6 q-mb-md">{{ $t('createTransaction') }}</div>
+        <div class="text-h6 q-mb-md">{{ isUpdate ? $t('updateTransaction') : $t('createTransaction') }}</div>
         <q-space />
         <!-- <q-btn-toggle v-model="toggleIncome" no-caps rounded unelevated toggle-color="primary" color="white"
           text-color="primary" :options="[

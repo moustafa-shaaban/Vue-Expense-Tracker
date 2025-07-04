@@ -181,7 +181,8 @@ const updateGrouping = () => {
 };
 
 // Initialize
-onMounted(() => {
+onMounted(async () => {
+  await transactionsStore.loadData();
   updateGrouping();
 });
 

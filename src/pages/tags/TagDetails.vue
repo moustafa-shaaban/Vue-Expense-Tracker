@@ -19,7 +19,7 @@ tagItem.value = tag
 
 function handleSubmit() {
   try {
-    transactionsStore.updateTag(route.params.id, tagItem.value);
+    transactionsStore.updateTag(tag);
     router.push({ name: 'tag-details', params: { id: route.params.id } });
     Notify.create({
       message: 'Tag Updated Successfully',

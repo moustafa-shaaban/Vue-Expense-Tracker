@@ -1,8 +1,14 @@
 <script setup>
+import { storeToRefs } from "pinia";
+
 import { useSettingsStore } from "src/stores/settings";
 import { useTransactionsStore } from "../stores/transactions"
-const { balance, getIncomes, getExpenses } = useTransactionsStore();
+
 const { currency } = useSettingsStore();
+
+const store = useTransactionsStore()
+
+const { balance, getIncomes, getExpenses } = storeToRefs(store)
 </script>
 
 <template>

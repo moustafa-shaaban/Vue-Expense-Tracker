@@ -63,6 +63,7 @@ const tagColor = ref("");
 
 function handleSubmit() {
   try {
+
     transactionsStore.addTag({
       id: uid(),
       name: tagName.value,

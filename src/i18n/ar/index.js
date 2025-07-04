@@ -50,4 +50,5 @@ export default {
   expenseAmountRequired: 'مبلغ المصروف مطلوب',
   expense: 'مصروف',
   income: 'دخل',
+  cancel: 'اغلاق',
 }

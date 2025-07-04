@@ -1,7 +1,7 @@
 <script setup>
 import { subWeeks, subMonths, subYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, parse, format, startOfToday } from "date-fns";
 import { useTransactionsStore } from 'src/stores/transactions';
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import { colors } from 'quasar'
@@ -11,6 +11,10 @@ const { getPaletteColor } = colors
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 const transactionsStore = useTransactionsStore();
+
+onMounted(async () => {
+  await transactionsStore.loadData();
+})
 
 const { transactions } = storeToRefs(transactionsStore)
 

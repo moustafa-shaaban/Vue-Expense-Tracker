@@ -46,7 +46,7 @@ function submit() {
     <div class="q-pa-md">
       <q-stepper v-model="step" ref="stepper" color="primary" animated>
         <q-step :name="1" :title="t('language')" icon="settings" :done="step > 1">
-          <q-div class="my-card">
+          <div class="my-card">
             <q-card-section>
               <div class="text-h6">Choose a Language / اختر اللغة</div>
             </q-card-section>
@@ -61,11 +61,11 @@ function submit() {
                 class="q-ml-sm" />
               <q-btn @click="$refs.stepper.next()" color="primary" :label="t('next')" />
             </q-card-actions>
-          </q-div>
+          </div>
         </q-step>
 
         <q-step :name="2" :title="t('theme')" icon="create_new_folder" :done="step > 2">
-          <q-div class="my-card">
+          <div class="my-card">
             <q-card-section>
               <div class="text-h6">{{ t('theme') }}</div>
             </q-card-section>
@@ -82,7 +82,7 @@ function submit() {
                 class="q-ml-sm" />
               <q-btn @click="$refs.stepper.next()" color="primary" :label="t('next')" />
             </q-card-actions>
-          </q-div>
+          </div>
         </q-step>
 
         <q-step :name="3" :title="t('currency')" icon="add_comment">

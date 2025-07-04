@@ -161,7 +161,7 @@ function confirm(id) {
       </q-card-section>
 
       <q-page-sticky position="bottom-left" :offset="[18, 18]">
-        <q-btn @click="isEditing = false" fab icon="undo" color="negative">
+        <q-btn :to="{ name: 'home' }" fab icon="undo" color="negative">
         </q-btn>
       </q-page-sticky>
     </q-card>

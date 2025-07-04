@@ -51,4 +51,5 @@ export default {
   expenseAmountRequired: 'Expense Amount is required',
   expense: 'Expense',
   income: 'Income',
+  cancel: 'Cancel',
 }

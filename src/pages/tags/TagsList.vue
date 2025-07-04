@@ -1,10 +1,15 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { useTransactionsStore } from '../../stores/transactions';
 import { Dialog, Notify } from 'quasar';
+import { storeToRefs } from 'pinia';
 
 const transactionsStore = useTransactionsStore();
+
+onMounted(async () => {
+  await transactionsStore.loadData();
+})
 
 const searchQuery = ref('');
 
@@ -41,8 +46,8 @@ const columns = [
   }
 ]
 
-
-const rows = transactionsStore.tags;
+const { tags } = storeToRefs(transactionsStore)
+const rows = tags;
 
 function confirm(id) {
   Dialog.create({
