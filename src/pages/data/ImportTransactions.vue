@@ -47,14 +47,15 @@ function reset() {
 
 function saveToStore() {
   try {
-    preview.value.forEach(tx => {
+    preview.value.forEach(transaction => {
       if (!store.transactions.find(t =>
-        t.name === tx.name &&
-        t.amount === tx.amount &&
-        t.date === tx.date &&
-        t.type === tx.type
+        t.name === transaction.name &&
+        t.amount === transaction.amount &&
+        t.date === transaction.date &&
+        t.type === transaction.type
       )) {
-        store.addTransaction(tx)
+        const data = JSON.parse(JSON.stringify(transaction))
+        store.addTransaction(data)
       }
     })
     router.push('/');

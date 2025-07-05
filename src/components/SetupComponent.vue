@@ -123,6 +123,6 @@ function submit() {
 
 .my-card
   width: 400px
-  height: 200px
+  height: 250px
   max-width: 1000px
 </style>
